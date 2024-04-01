@@ -4,10 +4,9 @@ FROM node:20
 # Set the working directory inside the container
 WORKDIR /src
 
-# Copy package.json and package-lock.json (or yarn.lock)
 COPY package*.json ./
 
-# Install dependencies
+# test
 RUN npm install
 
 # Copy the rest of your application code
