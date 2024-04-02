@@ -13,7 +13,7 @@ export function initializeDynamoDB(): void {
           secretAccessKey: 'f8nax8',
         },
         endpoint: {
-          hostname: 'dynamodb-local',
+          hostname: 'localhost',
           port: 8000,
           path: '',
           protocol: 'http:',
