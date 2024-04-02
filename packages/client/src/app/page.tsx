@@ -1,9 +1,7 @@
 import React from 'react'
 
-import StepComponent from '@/Components/StepComponent'
+import WrapComponent from '@/Components/WrapComponent'
 
 export default function Home() {
-  return (
-    <StepComponent selfNumber={1} title="HAVING" itemsList={['bla-bla', 'bla', 'bla=bla=bla']} />
-  )
+  return <WrapComponent />
 }
