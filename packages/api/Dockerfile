@@ -7,6 +7,7 @@ WORKDIR /src
 COPY package*.json ./
 
 # test
+USER root
 RUN npm install
 
 # Copy the rest of your application code
