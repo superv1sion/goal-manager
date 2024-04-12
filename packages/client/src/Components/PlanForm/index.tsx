@@ -5,8 +5,8 @@ import { addPlan } from './action'
 import { API_URL } from '../../constants/api';
 
 export default function PlanForm(): any {
-    const [planName, setPlanName] = useState('')
-    const [planDuration, setPlanDuration] = useState('')
+    // const [planName, setPlanName] = useState('')
+    // const [planDuration, setPlanDuration] = useState('')
     const [resultMessage, setResultMessage] = useState(null)
     const [formState, submitForm] = useFormState(addPlan, {})
 
@@ -19,14 +19,15 @@ export default function PlanForm(): any {
     }
 
     useEffect(() => {
-        if (!formState.statusCode) {
-            setPlanName('')
-            setPlanDuration('')
-            setResultMessage('Plan succesfully added')
-        } else {
-            setResultMessage('Error')
-
-        }
+        // if (!formState.statusCode) {
+        //     setPlanName('')
+        //     setPlanDuration('')
+        //     setResultMessage('Plan succesfully added')
+        // } else {
+        //     setResultMessage('Error')
+        //
+        // }
+        console.log(formState)
         setTimeout(() => setResultMessage(null), 10000)
         getAllPlans()
     }, [formState])
@@ -45,11 +46,11 @@ export default function PlanForm(): any {
             <input className="outline-0 mb-4 px-2 py-2 border-2 rounded-lg border-amber-200"
                    type="text"
                    name="planName"
-                   value={planName}
+                // value={planName}
                    id="planName"
-                   onChange={e => {
-                       onChangeHandler(setPlanName, e)
-                   }}
+                // onChange={e => {
+                //     onChangeHandler(setPlanName, e)
+                // }}
                    placeholder="Plan Name"/>
 
             <label htmlFor="planDuration" className="mb-2">Plan Duration</label>
@@ -57,8 +58,8 @@ export default function PlanForm(): any {
                    type="text"
                    name="planDuration"
                    id="planDuration"
-                   value={planDuration}
-                   onChange={(e) => onChangeHandler(setPlanDuration, e)}
+                // value={planDuration}
+                // onChange={(e) => onChangeHandler(setPlanDuration, e)}
                    placeholder="Enter plan duration"/>
 
             <button className="bg-slate-700 text-amber-200 w-48 self-center rounded-lg h-12 hover:bg-sky-700"
