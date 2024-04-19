@@ -1,10 +1,10 @@
-import { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 
 import { API_URL } from '@/constants/api'
 
 const TestPage = (): ReactElement => {
   const [plans, setPlans] = useState('')
-  const getAllPlans = () => {
+  const getAllPlans = async (): Promise<any> => {
     void fetch(API_URL + 'plans', { method: 'GET' }).then(async (data) => {
       const response = await data.json()
       setPlans(JSON.stringify(response))
@@ -12,7 +12,7 @@ const TestPage = (): ReactElement => {
   }
 
   useEffect(() => {
-    getAllPlans()
+    await getAllPlans()
   }, [])
   const addPlan = async (): Promise<any> => {
     void fetch(API_URL + 'plans', {
@@ -22,14 +22,14 @@ const TestPage = (): ReactElement => {
         'Content-Type': 'application/json',
       },
     }).then(async (data) => {
-      getAllPlans()
+      await getAllPlans()
     })
   }
 
   return (
     <div>
       plans: {plans}
-      <button onClick={addPlan}> add plan </button>
+      <button onClick={addPlan}> add plan</button>
     </div>
   )
 }

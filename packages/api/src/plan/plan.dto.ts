@@ -5,5 +5,8 @@ export class CreatePlanDto {
   name: string;
 
   @ApiProperty()
+  duration: number;
+
+  @ApiProperty()
   userId: string;
 }

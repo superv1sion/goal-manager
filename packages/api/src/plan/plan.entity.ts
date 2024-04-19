@@ -13,4 +13,7 @@ export class PlanEntity {
 
   @Attribute({ type: String, required: true })
   userId: string;
+
+  @Attribute({ type: Number, required: true })
+  duration: number;
 }

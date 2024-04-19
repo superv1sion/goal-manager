@@ -1,7 +1,7 @@
 import React from 'react'
 
-import WrapComponent from '@/Components/WrapComponent'
+import PlanForm from '@/Components/PlanForm'
 
-export default function Home() {
-  return <WrapComponent />
+export default function Home(): Rect.Element {
+  return <PlanForm />
 }

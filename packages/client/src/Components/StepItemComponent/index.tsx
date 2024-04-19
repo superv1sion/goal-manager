@@ -7,8 +7,8 @@ import { Item } from '@/types/item'
 import IconCheckbox from '../IconCheckbox/index'
 
 const StepItemComponent = ({ item, index }: { item: Item; index: number }): ReactElement => {
-  const [isHovered, setIsHovered] = useState(true)
-  const [isChecked, setIsChecked] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+  const [isChecked, setIsChecked] = useState(item.isReady)
 
   const handleCheckboxClick = (): void => {
     setIsChecked((prevState) => !prevState)
@@ -22,17 +22,17 @@ const StepItemComponent = ({ item, index }: { item: Item; index: number }): Reac
       onMouseOut={() => setIsHovered(false)}
     >
       <span className="px-1">
-        {index + 1 + ' '}.{item}
+        {index + 1 + ' '}.{item.text}
       </span>
 
       <span className="flex items-center">
         <IconCheckbox isChecked={isChecked} hovered={isHovered} onClick={handleCheckboxClick} />
 
-        <button className="mr-1 size-5 flex">
+        <button className="mr-1 size-5">
           <PencilSquareIcon className="size-full self-end text-black-500" />
         </button>
 
-        <button className="mr-1 size-5 flex">
+        <button className="mr-1 size-5">
           <TrashIcon className="size-full text-black-500" />
         </button>
       </span>
