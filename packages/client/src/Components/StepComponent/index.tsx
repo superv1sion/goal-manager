@@ -4,23 +4,33 @@ import React, { ReactElement, useState } from 'react'
 
 import ItemInput from '@/Components/ItemInput'
 import StepItemComponent from '@/Components/StepItemComponent'
-import { Item } from '@/types/item'
 import { Step } from '@/types/step'
 
-export default function StepComponent({ number, title, items }: Step): ReactElement {
+interface SteProps {
+  step: Step
+  formAction: () => any
+  name: string
+}
+
+export default function StepComponent({ step, formAction, name }: SteProps): ReactElement {
   const [editMode, setEditMode] = useState(false)
-  const [newItem, setNewItem] = useState<Item>({
-    text: '',
-    isReady: false,
-    requiresFulfillment: false,
-  })
+
+  console.log(step, 'stepcomponent')
+  const { items, number, title } = step
+  // const [newItem, setNewItem] = useState<Item>({
+  //   text: '',
+  //   isReady: false,
+  //   requiresFulfillment: false,
+  // })
+  // console.log(items, 'dsd')
   const itemsList = items.map((item, index) => (
     <StepItemComponent item={item} index={index} key={index} />
   ))
-  const addNewItem = (text): void => {
-    setNewItem({ ...newItem, text })
-    itemsList.push(newItem)
-  }
+  // const addNewItem = (text): void => {
+  //   setNewItem({ ...newItem, text })
+  //   itemsList.push(newItem)
+  //   console.log('bit')
+  // }
 
   return (
     <div className="bg-amber-300 h-72  w-80 rounded flex flex-col">
@@ -33,10 +43,18 @@ export default function StepComponent({ number, title, items }: Step): ReactElem
       </h4>
       <div className="bg-amber-200 h-5/6 px-3 py-2">
         <ul>{itemsList}</ul>
-        {editMode ? <ItemInput onConfirm={addNewItem} onBlurHandler={setEditMode} /> : null}
+        {editMode ? (
+          <ItemInput onConfirm={formAction} name={name} onBlurHandler={setEditMode} />
+        ) : null}
       </div>
-      <button onClick={() => setEditMode(true)}>
-        <PlusCircleIcon className="size-7 self-center my-1 mx-3 text-amber-950 " />
+      <button
+        className="size-fit mx-3 my-1 rounded-full"
+        onClick={(e) => {
+          e.preventDefault()
+          setEditMode(true)
+        }}
+      >
+        <PlusCircleIcon className="size-7 self-center   text-amber-950 rounded-full" />
       </button>
     </div>
   )

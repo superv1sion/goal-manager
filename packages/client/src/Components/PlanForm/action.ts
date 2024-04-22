@@ -16,6 +16,7 @@ export const addPlan = async (prevState, formData): Promise<any> => {
       'Content-Type': 'application/json',
     },
   }).then(async (data) => {
-    return await data.json()
+    const deita = prevState
+    return deita
   })
 }
