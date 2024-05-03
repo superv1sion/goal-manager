@@ -1,10 +1,11 @@
 'use client'
+import { observer } from 'mobx-react-lite'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { useFormState } from 'react-dom'
 
 import StepComponent from '@/Components/StepComponent'
 import { API_URL } from '@/constants/api'
-import { Item } from '@/types/item'
+import stepsStore from '@/store/stepsStore'
 import { Plan } from '@/types/plan'
 
 import { addPlan } from './action'
@@ -14,81 +15,15 @@ const getPlanInitialValue = (): Plan => {
     name: '',
     userId: '',
     duration: null,
-    steps: [
-      {
-        title: 'HAVING',
-        number: 1,
-        items: [],
-      },
-      {
-        title: 'BEING',
-        number: 2,
-        items: [],
-      },
-      {
-        number: 3,
-        title: 'DOING',
-        items: [],
-      },
-      {
-        number: 5,
-        title: 'COST',
-        items: [],
-      },
-      {
-        number: 4,
-        title: 'DOING',
-        items: [],
-      },
-      {
-        number: 5,
-        title: 'COST',
-        items: [],
-      },
-      {
-        number: 5,
-        title: 'COST',
-        items: [],
-      },
-    ],
+    steps: stepsStore.steps,
     actions: [],
   }
 }
 
-const setFromState = async (prevState, formData) => {
-  let newState = { ...prevState }
-  for (const [key, value] of formData.entries()) {
-    if (typeof +key === 'number' && !isNaN(+key)) {
-      const newItem: Item = {
-        requiresFulfillment: true,
-        isReady: false,
-        text: value,
-      }
-      newState = {
-        ...newState,
-        steps: [
-          ...newState.steps.map((step, index) => {
-            if (index == key) {
-              return {
-                ...step,
-                items: [...step.items, newItem],
-              }
-            }
-            return step
-          }),
-        ],
-      }
-    } else {
-      newState = { ...newState, key: value }
-    }
-  }
-  return newState
-}
-
-const PlanForm = (): ReactElement => {
+const PlanForm = observer((): ReactElement => {
   const [resultMessage, setResultMessage] = useState(null)
   const [formState, submitForm] = useFormState(addPlan, getPlanInitialValue())
-  const [items, setItemsAction] = useFormState(setFromState, getPlanInitialValue())
+  const [buttonDisabled, setButtonDisabled] = useState(false)
 
   const [plans, setPlans] = useState<Plan[]>([])
   const getAllPlans = () => {
@@ -102,21 +37,42 @@ const PlanForm = (): ReactElement => {
     // console.log(formState, 'from client')
     setTimeout(() => setResultMessage(null), 10000)
     getAllPlans()
-  }, [items])
-  const steps = items?.steps?.map((step, index, arr) => {
+  }, [formState])
+  const steps = getPlanInitialValue()?.steps?.map((step, index, arr) => {
     if (index === arr.length - 1) {
       return (
         <div className="row-start-2" key={index}>
-          <StepComponent name={`${index}`} step={step} formAction={setItemsAction} />
+          <StepComponent
+            stepNumber={index}
+            disabled={buttonDisabled}
+            step={step}
+            submitDisabler={setButtonDisabled}
+            addItem={stepsStore.addItem}
+            deleteItem={stepsStore.removeItem}
+            editItem={stepsStore.editItem}
+            toggleCheck={stepsStore.toggleCheck}
+          />
         </div>
       )
     }
-    return <StepComponent key={index} name={`${index}`} formAction={setItemsAction} step={step} />
+    return (
+      <StepComponent
+        addItem={stepsStore.addItem}
+        deleteItem={stepsStore.removeItem}
+        editItem={stepsStore.editItem}
+        toggleCheck={stepsStore.toggleCheck}
+        key={index}
+        stepNumber={index}
+        submitDisabler={setButtonDisabled}
+        disabled={buttonDisabled}
+        step={step}
+      />
+    )
   })
 
   return (
     <div className="px-8 py-6">
-      <form action={setItemsAction} className="flex flex-col mb-8">
+      <form action={submitForm} className="flex flex-col mb-8">
         <div className="mb-4">{plans}</div>
         <hr className="mb-2" />
 
@@ -142,8 +98,10 @@ const PlanForm = (): ReactElement => {
         />
 
         <button
-          className="bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12 hover:bg-sky-700"
+          disabled={buttonDisabled}
           type="submit"
+          className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
+           hover:bg-sky-700 disabled:bg-slate-400 disabled:cursor-not-allowed`}
         >
           Create Plan
         </button>
@@ -154,6 +112,6 @@ const PlanForm = (): ReactElement => {
       </form>
     </div>
   )
-}
+})
 
 export default PlanForm

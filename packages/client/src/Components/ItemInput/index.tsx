@@ -1,31 +1,35 @@
-'use client'
 import { CheckIcon, TrashIcon } from '@heroicons/react/24/outline'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useState } from 'react'
 
-const ItemInput = ({ onBlurHandler, onConfirm, name }): ReactElement => {
+const ItemInput = ({ onBlurHandler, onConfirm }): ReactElement => {
+  const [value, setValue] = useState('')
   return (
     <span className="flex justify-between">
       <input
         type="text"
-        className="outline-0 bg-amber-200 border-b border-black py-1 px-2"
+        onChange={(e) => setValue(e.target.value)}
+        value={value}
+        className="outline-0 bg-amber-200 border-b w-10/12 border-black py-1 px-2"
         autoFocus
-        name={name}
-        // onBlur={() => onBlurHandler(false)}
         placeholder="Enter your text"
       />
       <span className="flex items-center">
         <button
-          type="submit"
           className="mr-1 size-5"
-          // formAction={onConfirm}
-          onClick={(e) => {
-            onConfirm()
-            // onBlurHandler(false)
+          onClick={() => {
+            onConfirm(value)
+            setValue('')
+            onBlurHandler(false)
           }}
         >
           <CheckIcon />
         </button>
-        <button className="mr-1 size-5">
+        <button
+          className="mr-1 size-5"
+          onClick={() => {
+            onBlurHandler(false)
+          }}
+        >
           <TrashIcon className="size-full text-black-500" />
         </button>
       </span>

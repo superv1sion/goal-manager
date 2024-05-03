@@ -15,7 +15,10 @@ const IconCheckbox = ({
       className={`mr-1 ${isChecked ? 'size-5' : 'w-5 h-[.95rem]'} ${
         hovered || isChecked ? '' : 'hidden'
       } flex justify-center`}
-      onClick={onClick}
+      onClick={(e) => {
+        e.preventDefault()
+        onClick()
+      }}
     >
       {isChecked ? (
         <CheckCircleIcon className="size-full text-black-500" />
