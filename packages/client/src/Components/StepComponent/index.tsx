@@ -5,31 +5,20 @@ import React, { ReactElement, useEffect, useState } from 'react'
 
 import ItemInput from '@/Components/ItemInput'
 import StepItemComponent from '@/Components/StepItemComponent'
+import stepsStore from '@/store/stepsStore'
 import { Step } from '@/types/step'
 
 interface StepProps {
   step: Step
   stepNumber: number
   submitDisabler: () => any
-  addItem: (stepIdx: number, text: string) => void
-  deleteItem: (stepIdx: number, itemIdx: number) => void
-  editItem: (stepIdx: number, itemIdx: number, newText: string) => void
-  toggleCheck: (stepIdx: number, itemIdx: number) => void
   disabled: boolean
 }
 
 const StepComponent = observer(
-  ({
-    step,
-    submitDisabler,
-    stepNumber,
-    addItem,
-    disabled,
-    deleteItem,
-    editItem,
-    toggleCheck,
-  }: StepProps): ReactElement => {
+  ({ step, submitDisabler, stepNumber, disabled }: StepProps): ReactElement => {
     const { items, number, title } = step
+    const { addItem } = stepsStore
     const [editMode, setEditMode] = useState(false)
     // const [itemsList, setItemsList] = useState(items)
 
@@ -40,15 +29,7 @@ const StepComponent = observer(
       addItem(stepNumber, text)
     }
     const itemComponentsList = items.map((item, index) => (
-      <StepItemComponent
-        item={item}
-        index={index}
-        key={index}
-        stepNumber={stepNumber}
-        deleteItem={deleteItem}
-        editItem={editItem}
-        toggleCheck={toggleCheck}
-      />
+      <StepItemComponent item={item} index={index} key={index} stepNumber={stepNumber} />
     ))
 
     return (

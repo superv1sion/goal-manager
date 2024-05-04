@@ -8,6 +8,8 @@ const getFormPlanValues = (formData): { name: string; duration: number } => {
   }
 }
 export const addPlan = async (prevState, formData): Promise<any> => {
+  console.log(prevState, 'prev')
+
   // return await fetch(API_URL + 'plans', {
   //   method: 'POST',
   //   body: JSON.stringify(getFormPlanValues(formData)),
@@ -47,6 +49,6 @@ export const addPlan = async (prevState, formData): Promise<any> => {
   // console.log(newState.steps)
   // return newState
   for (const [key, value] of formData.entries()) {
-    console.log(key, value)
+    console.log(key, value, '---')
   }
 }

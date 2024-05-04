@@ -1,4 +1,5 @@
 'use client'
+import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { useFormState } from 'react-dom'
@@ -15,7 +16,7 @@ const getPlanInitialValue = (): Plan => {
     name: '',
     userId: '',
     duration: null,
-    steps: stepsStore.steps,
+    steps: toJS(stepsStore.steps),
     actions: [],
   }
 }
@@ -47,20 +48,12 @@ const PlanForm = observer((): ReactElement => {
             disabled={buttonDisabled}
             step={step}
             submitDisabler={setButtonDisabled}
-            addItem={stepsStore.addItem}
-            deleteItem={stepsStore.removeItem}
-            editItem={stepsStore.editItem}
-            toggleCheck={stepsStore.toggleCheck}
           />
         </div>
       )
     }
     return (
       <StepComponent
-        addItem={stepsStore.addItem}
-        deleteItem={stepsStore.removeItem}
-        editItem={stepsStore.editItem}
-        toggleCheck={stepsStore.toggleCheck}
         key={index}
         stepNumber={index}
         submitDisabler={setButtonDisabled}
