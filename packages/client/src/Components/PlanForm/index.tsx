@@ -5,41 +5,26 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import { useFormState } from 'react-dom'
 
 import StepComponent from '@/Components/StepComponent'
-import { API_URL } from '@/constants/api'
-import stepsStore from '@/store/stepsStore'
+import PlansStore from '@/store/stepsStore'
 import { Plan } from '@/types/plan'
 
 import { addPlan } from './action'
 
 const getPlanInitialValue = (): Plan => {
-  return {
-    name: '',
-    userId: '',
-    duration: null,
-    steps: toJS(stepsStore.steps),
-    actions: [],
-  }
+  return toJS(PlansStore.currentPlan)
 }
 
 const PlanForm = observer((): ReactElement => {
-  const [resultMessage, setResultMessage] = useState(null)
   const [formState, submitForm] = useFormState(addPlan, getPlanInitialValue())
   const [buttonDisabled, setButtonDisabled] = useState(false)
 
-  const [plans, setPlans] = useState<Plan[]>([])
-  const getAllPlans = () => {
-    void fetch(API_URL + 'plans', { method: 'GET' }).then(async (data) => {
-      const response = await data.json()
-      setPlans(JSON.stringify(response))
-    })
-  }
-
   useEffect(() => {
-    // console.log(formState, 'from client')
-    setTimeout(() => setResultMessage(null), 10000)
-    getAllPlans()
-  }, [formState])
-  const steps = getPlanInitialValue()?.steps?.map((step, index, arr) => {
+    if (localStorage.getItem('currentPlan') !== null) {
+      PlansStore.setCurrentPlan()
+    }
+  }, [PlansStore])
+
+  const steps = PlansStore.currentPlan.steps.map((step, index, arr) => {
     if (index === arr.length - 1) {
       return (
         <div className="row-start-2" key={index}>
@@ -66,9 +51,6 @@ const PlanForm = observer((): ReactElement => {
   return (
     <div className="px-8 py-6">
       <form action={submitForm} className="flex flex-col mb-8">
-        <div className="mb-4">{plans}</div>
-        <hr className="mb-2" />
-
         <label htmlFor="planName" className="mb-2">
           Enter plan name
         </label>
@@ -98,8 +80,6 @@ const PlanForm = observer((): ReactElement => {
         >
           Create Plan
         </button>
-
-        {resultMessage}
 
         <div className="grid grid-rows-3 grid-flow-col size-fit gap-1">{steps}</div>
       </form>

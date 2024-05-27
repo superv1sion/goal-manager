@@ -3,8 +3,9 @@ import { Step } from '@/types/step'
 
 export interface Plan {
   name: string
+  planId?: string
   duration: number
-  userId?: string
+  creationDate: Date | null
   steps: Step[]
   actions: Action[]
 }

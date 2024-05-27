@@ -2,7 +2,7 @@ import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import React, { ReactElement, useState } from 'react'
 
 import ItemInput from '@/Components/ItemInput'
-import stepsStore from '@/store/stepsStore'
+import PlansStore from '@/store/stepsStore'
 import { Item } from '@/types/item'
 
 import IconCheckbox from '../IconCheckbox/index'
@@ -16,7 +16,7 @@ interface StepItemComponentProps {
 const StepItemComponent = ({ item, index, stepNumber }: StepItemComponentProps): ReactElement => {
   const [isHovered, setIsHovered] = useState(false)
   const [editing, setEditing] = useState(false)
-  const { editItem, toggleCheck, removeItem } = stepsStore
+  const { editItem, toggleCheck, removeItem } = PlansStore
 
   const handleCheckboxClick = (): void => {
     toggleCheck(stepNumber, index)

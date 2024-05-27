@@ -1,7 +1,5 @@
 import React from 'react'
 
-import PlanForm from '@/Components/PlanForm'
-
 export default function Home(): Rect.Element {
-  return <PlanForm />
+  return <div className="h-10 bg-slate-500">Welcome</div>
 }
