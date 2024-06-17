@@ -46,7 +46,6 @@ const getInitialSteps = (): Step[] => [
 ]
 const getInitialPlan = (): Plan => ({
   name: '',
-  userId: '',
   duration: null,
   creationDate: null,
   planId: uuidv4(),
@@ -54,7 +53,8 @@ const getInitialPlan = (): Plan => ({
   actions: [],
 })
 
-const saveToLocalStorage = (key, value): void => {
+type PlanOrRecord = Plan | Record<string, Plan>
+const saveToLocalStorage = <T extends PlanOrRecord>(key: string, value: T): void => {
   localStorage.setItem(key, JSON.stringify(value))
 }
 const getFromLocalStorage = <Type>(key): Type => {
@@ -73,32 +73,41 @@ const getPlanFromLocalStorage = <Type>(): Type => {
 }
 
 class PlansStore {
-  // steps: Step[] = getInitialSteps()
-  _allPlans: Plan[] = [
-    {
+  _allPlans: Record<string, Plan> = {
+    'bla-bla': {
       ...getInitialPlan(),
       name: 'name1',
       duration: 1,
-      creationDate: new Date().toLocaleDateString(),
+      creationDate: new Date(),
     },
-    {
+    'bla-bla-bla': {
       ...getInitialPlan(),
       name: 'name2',
       duration: 2,
-      creationDate: new Date().toLocaleDateString(),
+      creationDate: new Date(),
     },
-  ]
+  }
 
-  currentPlan: Plan = getInitialPlan()
-
-  // initialPlan: Plan = getInitialPlan()
+  _draftPlan: Plan | null = null
 
   constructor() {
     makeAutoObservable(this)
   }
 
-  get allPlans(): Plan[] {
-    if (this._allPlans.length > 2) {
+  set draftPlan(planObj: Partial<Plan>) {
+    this._draftPlan = {
+      ...getInitialPlan(),
+      ...planObj,
+    }
+    saveToLocalStorage<Plan>('dratPlan', this._draftPlan)
+  }
+
+  get draftPlan(): Plan {
+    return this._draftPlan as Plan
+  }
+
+  get allPlans(): Record<string, Plan> {
+    if (Object.keys(this._allPlans).length > 2) {
       return this._allPlans
     } else {
       const plansFromLocalStorage = getAllPlansFromLocalStorage()
@@ -110,12 +119,8 @@ class PlansStore {
     saveToLocalStorage('currentPlan', this.currentPlan)
   }
 
-  setCurrentPlan = (): void => {
-    this.currentPlan = getPlanFromLocalStorage<Plan>()
-  }
-
   setAllPlans = (): void => {
-    this._allPlans = getAllPlansFromLocalStorage < Plan > []()
+    this._allPlans = getAllPlansFromLocalStorage()
   }
 
   addPlan = (name, duration): void => {
