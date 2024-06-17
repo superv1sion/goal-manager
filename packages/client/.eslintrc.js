@@ -61,6 +61,7 @@ module.exports = {
         '@typescript-eslint/consistent-type-imports': 'off',
         '@typescript-eslint/prefer-nullish-coalescing': 'warn',
         '@typescript-eslint/no-confusing-void-expression': 'off',
+        '@typescript-eslint/strict-boolean-expressions': 'off',
         '@typescript-eslint/explicit-function-return-type': 'error',
         '@typescript-eslint/consistent-indexed-object-style': 'warn',
         '@typescript-eslint/no-misused-promises': [
