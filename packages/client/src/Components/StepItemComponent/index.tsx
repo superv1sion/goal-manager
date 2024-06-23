@@ -21,7 +21,7 @@ const StepItemComponent = ({ item, index, stepNumber }: StepItemComponentProps):
   const handleCheckboxClick = (): void => {
     toggleCheck(stepNumber, index)
   }
-  const editItemConfirm = (text): void => {
+  const editItemConfirm = (text: string): void => {
     editItem(stepNumber, index, text)
   }
 
