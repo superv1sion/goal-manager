@@ -1,7 +1,7 @@
 'use client'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import { observer } from 'mobx-react-lite'
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { Dispatch, ReactElement, SetStateAction, useEffect, useState } from 'react'
 
 import ItemInput from '@/Components/ItemInput'
 import StepItemComponent from '@/Components/StepItemComponent'
@@ -11,7 +11,7 @@ import { Step } from '@/types/step'
 interface StepProps {
   step: Step
   stepNumber: number
-  submitDisabler: () => any
+  submitDisabler: Dispatch<SetStateAction<boolean>>
   disabled: boolean
 }
 
@@ -25,7 +25,7 @@ const StepComponent = observer(
     useEffect(() => {
       submitDisabler(editMode)
     }, [editMode, submitDisabler])
-    const addNewItem = (text): void => {
+    const addNewItem = (text: string): void => {
       addItem(stepNumber, text)
     }
     const itemComponentsList = items.map((item, index) => (
