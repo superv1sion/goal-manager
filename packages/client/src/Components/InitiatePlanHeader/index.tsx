@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { isEmpty, isNil } from 'ramda'
 import React, { ReactElement } from 'react'
 import { useFormState } from 'react-dom'
+import { v4 as uuidv4 } from 'uuid'
 
 import PlansStore from '@/store/stepsStore'
 
@@ -54,11 +55,11 @@ const action = async (_: null, formData: FormData): Promise<any> => {
   if (!isEmpty(errors)) {
     return { success: false, message: 'initiation failed', errors }
   }
-  PlansStore.draftPlan = { name, duration }
+  PlansStore.createDraftPlan(name, duration)
   return { success: true, message: 'plan initiated successfully' }
 }
 
-const PlanHeader = observer((): ReactElement => {
+const InitiatePlanHeader = observer((): ReactElement => {
   const [state, setState] = useFormState(action, null)
   console.log(state)
   return (
@@ -91,4 +92,4 @@ const PlanHeader = observer((): ReactElement => {
   )
 })
 
-export default PlanHeader
+export default InitiatePlanHeader
