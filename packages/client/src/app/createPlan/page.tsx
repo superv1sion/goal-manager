@@ -1,7 +1,13 @@
-import React from 'react'
+'use client'
+import React, { ReactElement } from 'react'
+import PlanStore from 'src/store/stepsStore'
 
-import PlanHeader from '@/Components/   PlanHeader/PlanHeader'
+import PlanForm from '@/Components/PlanForm'
 
-export default function CreatePlan(): React.Element {
-  return <PlanHeader />
+export default function CreatePlan(): ReactElement {
+  return (
+    <>
+      <PlanForm />
+    </>
+  )
 }
