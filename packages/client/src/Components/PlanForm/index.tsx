@@ -6,25 +6,26 @@ import { useFormState } from 'react-dom'
 
 import StepComponent from '@/Components/StepComponent'
 import PlansStore from '@/store/stepsStore'
-import { Plan } from '@/types/plan'
+import { DraftPlan } from '@/types/draftPlan'
 
 import { addPlan } from './action'
-
-const getPlanInitialValue = (): Plan => {
-  return toJS(PlansStore.currentPlan)
+const useStore = (): any => {
+  return PlansStore
+}
+const getPlanInitialValue = (): DraftPlan => {
+  return toJS(PlansStore.draftPlan)
 }
 
 const PlanForm = observer((): ReactElement => {
-  const [formState, submitForm] = useFormState(addPlan, getPlanInitialValue())
   const [buttonDisabled, setButtonDisabled] = useState(false)
+  // const [plan, setPlan] = useState<DraftPlan | null>(null)
+  // useEffect(() => {
+  //   const initialPlan = getPlanInitialValue()
+  //   setPlan(initialPlan)
+  // }, [])
+  const store = useStore()
 
-  useEffect(() => {
-    if (localStorage.getItem('currentPlan') !== null) {
-      PlansStore.setCurrentPlan()
-    }
-  }, [PlansStore])
-
-  const steps = PlansStore.currentPlan.steps.map((step, index, arr) => {
+  const steps = store?.draftPlan.steps.map((step, index, arr) => {
     if (index === arr.length - 1) {
       return (
         <div className="row-start-2" key={index}>
@@ -48,8 +49,12 @@ const PlanForm = observer((): ReactElement => {
     )
   })
 
+  const [formState, submitForm] = useFormState(addPlan, store?.draftPlan)
+
   return (
     <div className="px-8 py-6">
+      <h3>Plan Name: {store?.draftPlan.name}</h3>
+      <h3>Plan Duration: {store?.draftPlan?.duration}</h3>
       <form action={submitForm} className="flex flex-col mb-8">
         <label htmlFor="planName" className="mb-2">
           Enter plan name
