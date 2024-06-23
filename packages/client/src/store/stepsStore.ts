@@ -1,6 +1,9 @@
+'use client'
 import { configure, makeAutoObservable } from 'mobx'
+import React from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { DraftPlan } from '@/types/draftPlan'
 import { Item } from '@/types/item'
 import { Plan } from '@/types/plan'
 import { Step } from '@/types/step'
@@ -48,21 +51,21 @@ const getInitialPlan = (): Plan => ({
   name: '',
   duration: null,
   creationDate: null,
-  planId: uuidv4(),
+  planId: '',
   steps: getInitialSteps(),
   actions: [],
 })
 
-type PlanOrRecord = Plan | Record<string, Plan>
+type PlanOrRecord = Plan | Record<string, Plan> | Partial<Plan>
 const saveToLocalStorage = <T extends PlanOrRecord>(key: string, value: T): void => {
   localStorage.setItem(key, JSON.stringify(value))
 }
-const getFromLocalStorage = <Type>(key): Type => {
-  try {
-    return JSON.parse(localStorage.getItem(key))
-  } catch {
-    return getInitialPlan()
+const getFromLocalStorage = <Type>(key: string): Type | null => {
+  const item = localStorage.getItem(key)
+  if (item) {
+    return JSON.parse(item)
   }
+  return null
 }
 const getAllPlansFromLocalStorage = <Type>(): Type => {
   return getFromLocalStorage<Type>('allPlans')
@@ -88,22 +91,29 @@ class PlansStore {
     },
   }
 
-  _draftPlan: Plan | null = null
+  _draftPlan: DraftPlan | null = null
 
   constructor() {
     makeAutoObservable(this)
   }
 
-  set draftPlan(planObj: Partial<Plan>) {
-    this._draftPlan = {
-      ...getInitialPlan(),
-      ...planObj,
-    }
-    saveToLocalStorage<Plan>('dratPlan', this._draftPlan)
+  set draftPlan(planObj: DraftPlan) {
+    this._draftPlan = planObj
+    saveToLocalStorage<DraftPlan>('draftPlan', this._draftPlan)
   }
 
-  get draftPlan(): Plan {
-    return this._draftPlan as Plan
+  get draftPlan(): DraftPlan {
+    const draftPlan = getFromLocalStorage<DraftPlan>('draftPlan')
+    if (this._draftPlan) {
+      return this._draftPlan
+    } else if (draftPlan) {
+      return draftPlan
+    }
+    return getInitialPlan()
+  }
+
+  createDraftPlan = (name: string, duration: number): void => {
+    this.draftPlan = { steps: getInitialSteps(), actions: [], name, duration, planId: uuidv4() }
   }
 
   get allPlans(): Record<string, Plan> {
@@ -165,4 +175,7 @@ class PlansStore {
   }
 }
 
-export default new PlansStore()
+const store = new PlansStore()
+// export default new PlansStore()
+const StoreContext = React.createContext(store)
+export const useStore(): Storage => React.useContext(StoreContext)
