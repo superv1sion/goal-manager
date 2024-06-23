@@ -45,11 +45,14 @@ const validateDuration = (duration: number): ValidationResult => {
 const action = async (_: null, formData: FormData): Promise<any> => {
   const duration = parseInt(formData.get('planDuration') as string)
   const name = formData.get('planName') as string
-  const errors = [validateName(name), validateDuration(duration)].filter(
-    (validationResult) => !isEmpty(validationResult.errors)
-  )
+  const errors = [validateName(name), validateDuration(duration)]
+    .filter((validationResult) => !isEmpty(validationResult.errors))
+    .reduce(
+      (acc, validationResult) => ({ ...acc, [validationResult.fieldName]: validationResult }),
+      {}
+    )
   if (!isEmpty(errors)) {
-    return errors
+    return { success: false, message: 'initiation failed', errors }
   }
   PlansStore.draftPlan = { name, duration }
   return { success: true, message: 'plan initiated successfully' }
@@ -57,6 +60,7 @@ const action = async (_: null, formData: FormData): Promise<any> => {
 
 const PlanHeader = observer((): ReactElement => {
   const [state, setState] = useFormState(action, null)
+  console.log(state)
   return (
     <form action={setState} className="flex m-auto flex-col mb-8 px-8 py-6">
       <label htmlFor="planName" className="mb-2">
@@ -69,6 +73,7 @@ const PlanHeader = observer((): ReactElement => {
         id="planName"
         placeholder="Plan Name"
       />
+      {state?.planName?.errors}
 
       <label htmlFor="planDuration" className="mb-2">
         Plan Duration (Days):
@@ -79,6 +84,8 @@ const PlanHeader = observer((): ReactElement => {
         name="planDuration"
         placeholder="Enter plan duration"
       />
+      {state?.planDuration?.errors}
+
       <button>Initiate Plan</button>
     </form>
   )
