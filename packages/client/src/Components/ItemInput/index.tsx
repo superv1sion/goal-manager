@@ -1,7 +1,11 @@
 import { CheckIcon, TrashIcon } from '@heroicons/react/24/outline'
 import React, { ReactElement, useState } from 'react'
 
-const ItemInput = ({ onBlurHandler, onConfirm }): ReactElement => {
+interface Props {
+  onBlurHandler: (val: boolean) => void
+  onConfirm: (text: string) => void
+}
+const ItemInput = ({ onBlurHandler, onConfirm }: Props): ReactElement => {
   const [value, setValue] = useState('')
   return (
     <span className="flex justify-between">

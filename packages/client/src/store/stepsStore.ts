@@ -1,5 +1,5 @@
 'use client'
-import { configure, makeAutoObservable } from 'mobx'
+import { action, configure, makeAutoObservable } from 'mobx'
 import React from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -126,7 +126,7 @@ class PlansStore {
   }
 
   saveCurrentPlanToLocalStorage(): void {
-    saveToLocalStorage('currentPlan', this.currentPlan)
+    saveToLocalStorage('draftPlan', this.draftPlan)
   }
 
   setAllPlans = (): void => {
@@ -151,31 +151,31 @@ class PlansStore {
       isReady: false,
       requiresFulfillment: false,
     }
-    this.currentPlan.steps[stepIdx].items.push(newItem)
+    this.draftPlan.steps[stepIdx].items.push(newItem)
     this.saveCurrentPlanToLocalStorage()
   }
 
   removeItem = (stepIdx: number, itemIdx: number): void => {
-    this.currentPlan.steps[stepIdx].items.splice(itemIdx, 1)
+    this.draftPlan.steps[stepIdx].items.splice(itemIdx, 1)
     this.saveCurrentPlanToLocalStorage()
   }
 
   editItem = (stepIdx: number, itemIdx: number, newText: string): void => {
-    this.currentPlan.steps[stepIdx].items[itemIdx] = {
-      ...this.currentPlan.steps[stepIdx].items[itemIdx],
+    this.draftPlan.steps[stepIdx].items[itemIdx] = {
+      ...this.draftPlan.steps[stepIdx].items[itemIdx],
       text: newText,
     }
     this.saveCurrentPlanToLocalStorage()
   }
 
   toggleCheck = (stepIdx: number, itemIdx: number): void => {
-    this.currentPlan.steps[stepIdx].items[itemIdx].isReady =
-      !this.currentPlan.steps[stepIdx].items[itemIdx].isReady
+    this.draftPlan.steps[stepIdx].items[itemIdx].isReady =
+      !this.draftPlan.steps[stepIdx].items[itemIdx].isReady
     this.saveCurrentPlanToLocalStorage()
   }
 }
 
-const store = new PlansStore()
-// export default new PlansStore()
-const StoreContext = React.createContext(store)
-export const useStore(): Storage => React.useContext(StoreContext)
+export const store = new PlansStore()
+export default PlansStore
+export const StoreContext = React.createContext<PlansStore>(store)
+export const useStore = (): PlansStore => React.useContext(StoreContext)

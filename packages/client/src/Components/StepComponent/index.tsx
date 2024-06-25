@@ -5,7 +5,7 @@ import React, { Dispatch, ReactElement, SetStateAction, useEffect, useState } fr
 
 import ItemInput from '@/Components/ItemInput'
 import StepItemComponent from '@/Components/StepItemComponent'
-import stepsStore from '@/store/stepsStore'
+import { useStore } from '@/store/stepsStore'
 import { Step } from '@/types/step'
 
 interface StepProps {
@@ -18,7 +18,7 @@ interface StepProps {
 const StepComponent = observer(
   ({ step, submitDisabler, stepNumber, disabled }: StepProps): ReactElement => {
     const { items, number, title } = step
-    const { addItem } = stepsStore
+    const { addItem } = useStore()
     const [editMode, setEditMode] = useState(false)
     // const [itemsList, setItemsList] = useState(items)
 

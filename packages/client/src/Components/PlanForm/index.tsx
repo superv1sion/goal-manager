@@ -1,29 +1,22 @@
 'use client'
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useContext, useState } from 'react'
 import { useFormState } from 'react-dom'
 
 import StepComponent from '@/Components/StepComponent'
-import PlansStore from '@/store/stepsStore'
+import { StoreContext, useStore } from '@/store/stepsStore'
 import { DraftPlan } from '@/types/draftPlan'
 
 import { addPlan } from './action'
-const useStore = (): any => {
-  return PlansStore
-}
-const getPlanInitialValue = (): DraftPlan => {
-  return toJS(PlansStore.draftPlan)
-}
+// const getPlanInitialValue = (): DraftPlan => {
+//   return toJS(PlansStore.draftPlan)
+// }
 
 const PlanForm = observer((): ReactElement => {
+  const store = useContext(StoreContext)
+
   const [buttonDisabled, setButtonDisabled] = useState(false)
-  // const [plan, setPlan] = useState<DraftPlan | null>(null)
-  // useEffect(() => {
-  //   const initialPlan = getPlanInitialValue()
-  //   setPlan(initialPlan)
-  // }, [])
-  const store = useStore()
 
   const steps = store?.draftPlan.steps.map((step, index, arr) => {
     if (index === arr.length - 1) {
@@ -49,33 +42,33 @@ const PlanForm = observer((): ReactElement => {
     )
   })
 
-  const [formState, submitForm] = useFormState(addPlan, store?.draftPlan)
+  const [formState, submitForm] = useFormState(addPlan, store.addPlan)
 
   return (
     <div className="px-8 py-6">
       <h3>Plan Name: {store?.draftPlan.name}</h3>
       <h3>Plan Duration: {store?.draftPlan?.duration}</h3>
       <form action={submitForm} className="flex flex-col mb-8">
-        <label htmlFor="planName" className="mb-2">
-          Enter plan name
-        </label>
-        <input
-          className="outline-0 mb-4 px-2 py-2 border-2 rounded-lg border-amber-200"
-          type="text"
-          name="planName"
-          id="planName"
-          placeholder="Plan Name"
-        />
+        {/* <label htmlFor="planName" className="mb-2"> */}
+        {/*  Enter plan name */}
+        {/* </label> */}
+        {/* <input */}
+        {/*  className="outline-0 mb-4 px-2 py-2 border-2 rounded-lg border-amber-200" */}
+        {/*  type="text" */}
+        {/*  name="planName" */}
+        {/*  id="planName" */}
+        {/*  placeholder="Plan Name" */}
+        {/* /> */}
 
-        <label htmlFor="planDuration" className="mb-2">
-          Plan Duration
-        </label>
-        <input
-          className="outline-0 mb-4 px-2 py-2 border-2 rounded-lg border-amber-200"
-          type="text"
-          name="planDuration"
-          placeholder="Enter plan duration"
-        />
+        {/* <label htmlFor="planDuration" className="mb-2"> */}
+        {/*  Plan Duration */}
+        {/* </label> */}
+        {/* <input */}
+        {/*  className="outline-0 mb-4 px-2 py-2 border-2 rounded-lg border-amber-200" */}
+        {/*  type="text" */}
+        {/*  name="planDuration" */}
+        {/*  placeholder="Enter plan duration" */}
+        {/* /> */}
 
         <button
           disabled={buttonDisabled}

@@ -1,7 +1,8 @@
 'use client'
 import { toJS } from 'mobx'
 
-import PlanStore from '@/store/stepsStore'
+import PlansStore from '@/store/stepsStore'
+// import PlanStore, { useStore } from '@/store/stepsStore'
 import { Plan } from '@/types/plan'
 
 const getFormPlanValues = (formData: FormData): { name: string; duration: number } => {
@@ -10,10 +11,11 @@ const getFormPlanValues = (formData: FormData): { name: string; duration: number
     duration: parseInt(formData.get('planDuration') as string),
   }
 }
-export const addPlan = (prevState: Partial<Plan>, formData: FormData): Partial<Plan> => {
+export const addPlan = (
+  prevState: (name: string, duration: number) => void,
+  formData: FormData
+): ((name: string, duration: number) => void) => {
   const { name, duration } = getFormPlanValues(formData)
-  PlanStore.addPlan(name, duration)
-  console.log(name, duration)
-  console.log(toJS(PlanStore))
+  prevState(name, duration)
   return prevState
 }
