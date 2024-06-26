@@ -9,28 +9,31 @@ import { Item } from '@/types/item'
 import IconCheckbox from '../IconCheckbox/index'
 
 interface StepItemComponentProps {
-  item: Item
-  index: number
+  // item: Item
+  itemIndex: number
   stepNumber: number
+  removeItem: (index: number) => void
 }
 
 const StepItemComponent = observer(
-  ({ item, index, stepNumber }: StepItemComponentProps): ReactElement => {
+  ({ itemIndex, stepNumber, removeItem }: StepItemComponentProps): ReactElement => {
     const [isHovered, setIsHovered] = useState(false)
     const [editing, setEditing] = useState(false)
-    const { editItem, toggleCheck, removeItem } = useStore()
+    const store = useStore()
+    const { editItem, toggleCheck } = store
+    const item = store.draftPlan.steps[stepNumber].items[itemIndex]
 
     const handleCheckboxClick = (): void => {
-      toggleCheck(stepNumber, index)
+      toggleCheck(stepNumber, itemIndex)
     }
     const editItemConfirm = (text: string): void => {
-      editItem(stepNumber, index, text)
+      editItem(stepNumber, itemIndex, text)
     }
 
     return (
       <li
         className="mb-2 flex justify-between"
-        key={index}
+        key={itemIndex}
         onMouseOver={() => setIsHovered(true)}
         onMouseOut={() => setIsHovered(false)}
       >
@@ -38,7 +41,7 @@ const StepItemComponent = observer(
           <ItemInput onConfirm={editItemConfirm} onBlurHandler={setEditing} />
         ) : (
           <>
-            {index + 1 + '. '}
+            {itemIndex + 1 + '. '}
             {item.text}
             <span className="flex items-center">
               <IconCheckbox
@@ -51,7 +54,13 @@ const StepItemComponent = observer(
                 <PencilSquareIcon className="size-full self-end text-black-500" />
               </button>
 
-              <button className="mr-1 size-5" onClick={() => removeItem(stepNumber, index)}>
+              <button
+                className="mr-1 size-5"
+                onClick={(e) => {
+                  e.preventDefault()
+                  removeItem(itemIndex)
+                }}
+              >
                 <TrashIcon className="size-full text-black-500" />
               </button>
             </span>
