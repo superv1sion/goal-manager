@@ -1,5 +1,5 @@
 'use client'
-import { action, configure, makeAutoObservable } from 'mobx'
+import { configure, makeAutoObservable, runInAction } from 'mobx'
 import React from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -156,16 +156,22 @@ class PlansStore {
   }
 
   removeItem = (stepIdx: number, itemIdx: number): void => {
-    this.draftPlan.steps[stepIdx].items.splice(itemIdx, 1)
+    this.draftPlan.steps[stepIdx].items = [
+      ...this.draftPlan.steps[stepIdx].items.filter((item, index) => index !== itemIdx),
+    ]
+    this.draftPlan = { ...this.draftPlan }
+    // this.draftPlan.steps[stepIdx].items.splice(itemIdx, 1)
     this.saveCurrentPlanToLocalStorage()
   }
 
   editItem = (stepIdx: number, itemIdx: number, newText: string): void => {
-    this.draftPlan.steps[stepIdx].items[itemIdx] = {
-      ...this.draftPlan.steps[stepIdx].items[itemIdx],
-      text: newText,
-    }
-    this.saveCurrentPlanToLocalStorage()
+    runInAction(() => {
+      this.draftPlan.steps[stepIdx].items[itemIdx] = {
+        ...this.draftPlan.steps[stepIdx].items[itemIdx],
+        text: newText,
+      }
+      this.saveCurrentPlanToLocalStorage()
+    })
   }
 
   toggleCheck = (stepIdx: number, itemIdx: number): void => {
