@@ -20,7 +20,8 @@ const ItemInput = ({ onBlurHandler, onConfirm }: Props): ReactElement => {
       <span className="flex items-center">
         <button
           className="mr-1 size-5"
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault()
             onConfirm(value)
             setValue('')
             onBlurHandler(false)
