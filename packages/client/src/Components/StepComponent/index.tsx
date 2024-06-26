@@ -17,8 +17,8 @@ interface StepProps {
 
 const StepComponent = observer(
   ({ step, submitDisabler, stepNumber, disabled }: StepProps): ReactElement => {
-    const { items, number, title } = step
-    const { addItem } = useStore()
+    const { items, number, title } = useStore().draftPlan.steps[stepNumber]
+    const { addItem, removeItem } = useStore()
     const [editMode, setEditMode] = useState(false)
     // const [itemsList, setItemsList] = useState(items)
 
@@ -28,8 +28,17 @@ const StepComponent = observer(
     const addNewItem = (text: string): void => {
       addItem(stepNumber, text)
     }
+    const removeItemHandler = (index: number): void => {
+      removeItem(stepNumber, index)
+    }
     const itemComponentsList = items.map((item, index) => (
-      <StepItemComponent item={item} index={index} key={index} stepNumber={stepNumber} />
+      <StepItemComponent
+        // item={item}
+        itemIndex={index}
+        removeItem={removeItemHandler}
+        key={index}
+        stepNumber={stepNumber}
+      />
     ))
 
     return (
