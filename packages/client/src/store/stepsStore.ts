@@ -117,7 +117,7 @@ class PlansStore {
       creationDate: new Date(),
       planId: uuidv4(),
     }
-    this._allPlans = { ...this._allPlans, [plan.planId]: plan }
+    this._allPlans = [...this._allPlans, plan]
     saveToLocalStorage('allPlans', this.allPlans)
   }
 

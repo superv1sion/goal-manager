@@ -12,63 +12,51 @@ import { addPlanAction } from './action'
 const PlanForm = observer((): ReactElement => {
   const { draftPlan, addPlan } = useStore()
   const router = useRouter()
-
   if (!draftPlan) {
     router.push('/initiatePlan')
     return <></>
   }
   const [buttonDisabled, setButtonDisabled] = useState(false)
 
-  const steps = draftPlan.steps.map((step, index, arr) => {
-    if (index === arr.length - 1) {
-      return (
-        <div className="row-start-2" key={index}>
-          <StepComponent
-            stepNumber={index}
-            disabled={buttonDisabled}
-            step={step}
-            submitDisabler={setButtonDisabled}
-          />
-        </div>
-      )
-    }
-    return (
-      <StepComponent
-        key={index}
-        stepNumber={index}
-        submitDisabler={setButtonDisabled}
-        disabled={buttonDisabled}
-        step={step}
-      />
-    )
-  })
-
   const [formState, submitForm] = useFormState(addPlanAction(addPlan), null)
   return (
     <div className="px-8 py-6">
-      <h3>Plan Name: {draftPlan.name}</h3>
-      <h3>Plan Duration: {draftPlan?.duration}</h3>
       <form action={submitForm} className="flex flex-col mb-8">
-        {/* <label htmlFor="planName" className="mb-2"> */}
-        {/*  Enter plan name */}
-        {/* </label> */}
-        {/* <input */}
-        {/*  className="outline-0 mb-4 px-2 py-2 border-2 rounded-lg border-amber-200" */}
-        {/*  type="text" */}
-        {/*  name="planName" */}
-        {/*  id="planName" */}
-        {/*  placeholder="Plan Name" */}
-        {/* /> */}
-
-        {/* <label htmlFor="planDuration" className="mb-2"> */}
-        {/*  Plan Duration */}
-        {/* </label> */}
-        {/* <input */}
-        {/*  className="outline-0 mb-4 px-2 py-2 border-2 rounded-lg border-amber-200" */}
-        {/*  type="text" */}
-        {/*  name="planDuration" */}
-        {/*  placeholder="Enter plan duration" */}
-        {/* /> */}
+        <h3>Plan Name: {draftPlan.name}</h3>
+        <h3>Plan Duration: {draftPlan?.duration}</h3>
+        <button
+          type="button"
+          onClick={() => router.push('/initiatePlan')}
+          className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
+           hover:bg-sky-700 disabled:bg-slate-400 disabled:cursor-not-allowed`}
+        >
+          Back
+        </button>
+        <div className="grid grid-rows-3 grid-flow-col size-fit gap-1">
+          {draftPlan.steps.map((step, index, arr) => {
+            if (index === arr.length - 1) {
+              return (
+                <div className="row-start-2" key={index}>
+                  <StepComponent
+                    stepNumber={index}
+                    disabled={buttonDisabled}
+                    step={step}
+                    submitDisabler={setButtonDisabled}
+                  />
+                </div>
+              )
+            }
+            return (
+              <StepComponent
+                key={index}
+                stepNumber={index}
+                submitDisabler={setButtonDisabled}
+                disabled={buttonDisabled}
+                step={step}
+              />
+            )
+          })}
+        </div>
 
         <button
           disabled={buttonDisabled}
@@ -78,8 +66,6 @@ const PlanForm = observer((): ReactElement => {
         >
           Create Plan
         </button>
-
-        <div className="grid grid-rows-3 grid-flow-col size-fit gap-1">{steps}</div>
       </form>
     </div>
   )

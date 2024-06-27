@@ -79,6 +79,7 @@ const InitiatePlanHeader = observer((): ReactElement => {
         name="planName"
         id="planName"
         placeholder="Plan Name"
+        defaultValue={store.draftPlan?.name ?? ''}
       />
       {state?.planName?.errors}
 
@@ -90,10 +91,16 @@ const InitiatePlanHeader = observer((): ReactElement => {
         type="text"
         name="planDuration"
         placeholder="Enter plan duration"
+        defaultValue={store.draftPlan?.duration ?? ''}
       />
       {state?.planDuration?.errors}
 
-      <button>Initiate Plan</button>
+      <button
+        className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
+           hover:bg-sky-700 disabled:bg-slate-400 disabled:cursor-not-allowed`}
+      >
+        Initiate Plan
+      </button>
     </form>
   )
 })

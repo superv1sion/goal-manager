@@ -1,12 +1,8 @@
 'use client'
 
-import { Action } from '@/types/action'
 import { DraftPlan } from '@/types/draftPlan'
-import { Step } from '@/types/step'
 
-const getFormPlanValues = (
-  formData: FormData
-): { name: string; duration: number; actions: Action[]; steps: Step[] } => {
+const getFormPlanValues = (formData: FormData): DraftPlan => {
   return {
     name: formData.get('planName') as string,
     duration: parseInt(formData.get('planDuration') as string),
