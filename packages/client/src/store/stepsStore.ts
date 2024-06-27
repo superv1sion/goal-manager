@@ -98,7 +98,7 @@ class PlansStore {
     return getFromLocalStorage<DraftPlan>('draftPlan')
   }
 
-  clearDraftPlan() {
+  clearDraftPlan = (): void => {
     console.log(this)
     this.draftPlan = null
   }

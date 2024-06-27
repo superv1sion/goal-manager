@@ -21,7 +21,7 @@ const PlanForm = observer((): ReactElement => {
 
   const [formState, submitForm] = useFormState(addPlanAction(addPlan, draftPlan), null)
   if (formState?.success) {
-    store.draftPlan = null
+    store.clearDraftPlan()
     router.push('plans')
     return <></>
   }
