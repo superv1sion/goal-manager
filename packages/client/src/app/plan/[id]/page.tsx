@@ -1,17 +1,28 @@
-import React from 'react'
+'use client'
+import { useParams, useRouter } from 'next/navigation'
+import React, { useMemo } from 'react'
 
+import PlanComponent from '@/app/plan/[id]/Plan'
 import { useStore } from '@/store/stepsStore'
-
-import Plan from './Plan'
 
 interface params {
   id: string
 }
 
-const PlanPage = ({ id }: params): React.JSX.Element => {
+const PlanPage = (): React.JSX.Element => {
+  const params = useParams()
+  const router = useRouter()
+  const { allPlans } = useStore()
+  const plan = useMemo(() => {
+    return allPlans.find((e) => e.planId === params?.id)
+  }, allPlans)
+  if (!plan) {
+    router.push('/plans')
+    return <></>
+  }
   return (
     <div>
-      <Plan id={id} />
+      <PlanComponent plan={plan} />
     </div>
   )
 }

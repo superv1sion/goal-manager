@@ -149,6 +149,11 @@ class PlansStore {
     saveToLocalStorage('allPlans', this.allPlans)
   }
 
+  deletePlan = (planId: string): void => {
+    this.allPlans = this.allPlans.filter((persistentPlan) => persistentPlan.planId !== planId)
+    saveToLocalStorage('allPlans', this.allPlans)
+  }
+
   addItem = (stepIdx: number, text: string): void => {
     if (!this.draftPlan) {
       return

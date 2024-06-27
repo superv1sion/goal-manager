@@ -1,13 +1,11 @@
 'use client'
-import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useStore } from 'src/store/stepsStore'
 
-const Plan = observer(({ id }: { id: string }): React.JSX.Element => {
-  const { allPlans } = useStore()
+import { Plan } from '@/types/plan'
 
-  const plan = toJS(allPlans).find((e) => e.planId === id)
+const PlanComponent = observer(({ plan }: { plan: Plan }): React.JSX.Element => {
   return (
     <div>
       <h2>{plan?.name}</h2>
@@ -16,4 +14,4 @@ const Plan = observer(({ id }: { id: string }): React.JSX.Element => {
   )
 })
 
-export default Plan
+export default PlanComponent
