@@ -6,6 +6,7 @@ import React, { ReactElement } from 'react'
 import { useFormState } from 'react-dom'
 
 import { useStore } from '@/store/stepsStore'
+import { DraftPlan } from '@/types/draftPlan'
 
 type Predicate<T> = (value: T) => boolean
 type ValidationRule<T> = [Predicate<T>, string]
@@ -44,8 +45,8 @@ const validateDuration = (duration: number): ValidationResult => {
 }
 
 const action =
-  (createDraftPlan: (name: string, duration: number) => void) =>
-  async (_: null, formData: FormData): Promise<any> => {
+  (createDraftPlan: (draftPlan: DraftPlan) => void) =>
+  async (initialState: DraftPlan, formData: FormData): Promise<any> => {
     const duration = parseInt(formData.get('planDuration') as string)
     const name = formData.get('planName') as string
     const errors = [validateName(name), validateDuration(duration)]
@@ -57,14 +58,14 @@ const action =
     if (!isEmpty(errors)) {
       return { success: false, message: 'initiation failed', errors }
     }
-    createDraftPlan(name, duration)
+    createDraftPlan({ ...initialState, name, duration })
     return { success: true, message: 'plan initiated successfully' }
   }
 
 const InitiatePlanHeader = observer((): ReactElement => {
   const store = useStore()
   const router = useRouter()
-  const [state, setState] = useFormState(action(store.createDraftPlan), null)
+  const [state, setState] = useFormState(action(store.createDraftPlan), store.draftPlan)
   if (state?.success) {
     router.push('createPlan')
   }

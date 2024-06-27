@@ -91,8 +91,14 @@ class PlansStore {
     return getFromLocalStorage<DraftPlan>('draftPlan')
   }
 
-  createDraftPlan = (name: string, duration: number): void => {
-    this.draftPlan = { steps: getInitialSteps(), actions: [], name, duration, planId: uuidv4() }
+  createDraftPlan = (draftPlan: DraftPlan): void => {
+    this.draftPlan = {
+      steps: draftPlan.steps ?? getInitialSteps(),
+      actions: draftPlan.actions ?? [],
+      name: draftPlan.name,
+      duration: draftPlan.duration,
+      planId: draftPlan.planId ?? uuidv4(),
+    }
   }
 
   get allPlans(): Plan[] {
