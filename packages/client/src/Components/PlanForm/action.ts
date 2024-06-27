@@ -1,21 +1,23 @@
 'use client'
-import { toJS } from 'mobx'
 
-import PlansStore from '@/store/stepsStore'
-// import PlanStore, { useStore } from '@/store/stepsStore'
-import { Plan } from '@/types/plan'
+import { Action } from '@/types/action'
+import { DraftPlan } from '@/types/draftPlan'
+import { Step } from '@/types/step'
 
-const getFormPlanValues = (formData: FormData): { name: string; duration: number } => {
+const getFormPlanValues = (
+  formData: FormData
+): { name: string; duration: number; actions: Action[]; steps: Step[] } => {
   return {
     name: formData.get('planName') as string,
     duration: parseInt(formData.get('planDuration') as string),
+    actions: [],
+    steps: [],
   }
 }
-export const addPlanAction = (
-  prevState: (name: string, duration: number) => void,
-  formData: FormData
-): ((name: string, duration: number) => void) => {
-  const { name, duration } = getFormPlanValues(formData)
-  prevState(name, duration)
-  return prevState
-}
+export const addPlanAction =
+  (addPlan: (draftPlan: DraftPlan) => void) =>
+  (_: any, formData: FormData): boolean => {
+    const { name, duration, actions, steps } = getFormPlanValues(formData)
+    addPlan({ actions, steps, name, duration })
+    return true
+  }

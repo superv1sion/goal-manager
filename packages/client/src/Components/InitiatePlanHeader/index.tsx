@@ -1,5 +1,6 @@
 'use client'
 import { observer } from 'mobx-react-lite'
+import { useRouter } from 'next/navigation'
 import { isEmpty, isNil } from 'ramda'
 import React, { ReactElement } from 'react'
 import { useFormState } from 'react-dom'
@@ -62,7 +63,11 @@ const action =
 
 const InitiatePlanHeader = observer((): ReactElement => {
   const store = useStore()
+  const router = useRouter()
   const [state, setState] = useFormState(action(store.createDraftPlan), null)
+  if (state?.success) {
+    router.push('createPlan')
+  }
   return (
     <form action={setState} className="flex m-auto flex-col mb-8 px-8 py-6">
       <label htmlFor="planName" className="mb-2">

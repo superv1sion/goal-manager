@@ -84,14 +84,11 @@ class PlansStore {
     saveToLocalStorage<DraftPlan>('draftPlan', this._draftPlan)
   }
 
-  get draftPlan(): DraftPlan {
-    const draftPlan = getFromLocalStorage<DraftPlan>('draftPlan')
+  get draftPlan(): DraftPlan | null {
     if (this._draftPlan) {
       return this._draftPlan
-    } else if (draftPlan) {
-      return draftPlan
     }
-    return getInitialPlan()
+    return getFromLocalStorage<DraftPlan>('draftPlan')
   }
 
   createDraftPlan = (name: string, duration: number): void => {
@@ -125,6 +122,9 @@ class PlansStore {
   }
 
   addItem = (stepIdx: number, text: string): void => {
+    if (!this.draftPlan) {
+      return
+    }
     const newItem: Item = {
       text,
       isReady: false,
@@ -135,8 +135,11 @@ class PlansStore {
   }
 
   removeItem = (stepIdx: number, itemIdx: number): void => {
+    if (!this.draftPlan) {
+      return
+    }
     this.draftPlan.steps[stepIdx].items = [
-      ...this.draftPlan.steps[stepIdx].items.filter((item, index) => index !== itemIdx),
+      ...this.draftPlan?.steps[stepIdx].items.filter((item, index) => index !== itemIdx),
     ]
     this.draftPlan = { ...this.draftPlan }
     // this.draftPlan.steps[stepIdx].items.splice(itemIdx, 1)
@@ -145,6 +148,9 @@ class PlansStore {
 
   editItem = (stepIdx: number, itemIdx: number, newText: string): void => {
     runInAction(() => {
+      if (!this.draftPlan) {
+        return
+      }
       this.draftPlan.steps[stepIdx].items[itemIdx] = {
         ...this.draftPlan.steps[stepIdx].items[itemIdx],
         text: newText,
@@ -154,13 +160,16 @@ class PlansStore {
   }
 
   toggleCheck = (stepIdx: number, itemIdx: number): void => {
+    if (!this.draftPlan) {
+      return
+    }
     this.draftPlan.steps[stepIdx].items[itemIdx].isReady =
       !this.draftPlan.steps[stepIdx].items[itemIdx].isReady
     this.saveCurrentPlanToLocalStorage()
   }
 }
+export default PlansStore
 
 export const store = new PlansStore()
-export default PlansStore
 export const StoreContext = React.createContext<PlansStore>(store)
 export const useStore = (): PlansStore => React.useContext(StoreContext)

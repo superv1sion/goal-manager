@@ -1,20 +1,17 @@
 import React from 'react'
 
+import { useStore } from '@/store/stepsStore'
+
 import Plan from './Plan'
 
 interface params {
   id: string
 }
 
-const PlanPage = ({ params }: params): React.Element => {
-  // console.log(params.id)
-  // console.log(toJS(PlansStore.allPlans))
-  // const plan = toJS(PlansStore.allPlans.find((e) => e.planId === params.id))
-  // console.log(plan)
-  console.log(params, '----------------')
+const PlanPage = ({ id }: params): React.JSX.Element => {
   return (
     <div>
-      <Plan id={params.id} />
+      <Plan id={id} />
     </div>
   )
 }

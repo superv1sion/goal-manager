@@ -1,5 +1,6 @@
 'use client'
 import { observer } from 'mobx-react-lite'
+import { useRouter } from 'next/navigation'
 import React, { ReactElement, useState } from 'react'
 import { useFormState } from 'react-dom'
 
@@ -10,6 +11,12 @@ import { addPlanAction } from './action'
 
 const PlanForm = observer((): ReactElement => {
   const { draftPlan, addPlan } = useStore()
+  const router = useRouter()
+
+  if (!draftPlan) {
+    router.push('/initiatePlan')
+    return <></>
+  }
   const [buttonDisabled, setButtonDisabled] = useState(false)
 
   const steps = draftPlan.steps.map((step, index, arr) => {
@@ -36,8 +43,8 @@ const PlanForm = observer((): ReactElement => {
     )
   })
 
-  const [formState, submitForm] = useFormState(addPlanAction, addPlan)
-
+  const [formState, submitForm] = useFormState(addPlanAction(addPlan), null)
+  console.log(formState)
   return (
     <div className="px-8 py-6">
       <h3>Plan Name: {draftPlan.name}</h3>
