@@ -6,23 +6,17 @@ import { useFormState } from 'react-dom'
 
 import StepComponent from '@/Components/StepComponent'
 import { useStore } from '@/store/stepsStore'
+import { DraftPlan } from '@/types/draftPlan'
 
 import { addPlanAction } from './action'
 
-const PlanForm = observer((): ReactElement => {
-  const store = useStore()
-  const { draftPlan, addPlan, clearDraftPlan } = store
+const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElement => {
+  const { addPlan, consumeDraftPlan } = useStore()
   const router = useRouter()
-  if (!draftPlan) {
-    router.push('/initiatePlan')
-    return <></>
-  }
   const [buttonDisabled, setButtonDisabled] = useState(false)
-
   const [formState, submitForm] = useFormState(addPlanAction(addPlan, draftPlan), null)
   if (formState?.success) {
-    store.clearDraftPlan()
-    router.push('plans')
+    consumeDraftPlan()
     return <></>
   }
   return (

@@ -1,5 +1,6 @@
 'use client'
 import { configure, makeAutoObservable, runInAction } from 'mobx'
+import { omit } from 'ramda'
 import React from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -98,9 +99,10 @@ class PlansStore {
     return getFromLocalStorage<DraftPlan>('draftPlan')
   }
 
-  clearDraftPlan = (): void => {
-    console.log(this)
-    this.draftPlan = null
+  consumeDraftPlan = (): void => {
+    if (this.draftPlan) {
+      this.draftPlan = { ...this.draftPlan, isConsumed: true }
+    }
   }
 
   createDraftPlan = (draftPlan: DraftPlan): void => {
@@ -136,7 +138,7 @@ class PlansStore {
 
   addPlan = (draftPlan: DraftPlan): void => {
     const plan: Plan = {
-      ...draftPlan,
+      ...omit(['isConsumed'], draftPlan),
       creationDate: new Date(),
       planId: draftPlan.planId ?? uuidv4(),
     }

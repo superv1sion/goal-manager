@@ -2,7 +2,7 @@
 import { observer } from 'mobx-react-lite'
 import { useRouter } from 'next/navigation'
 import { isEmpty, isNil } from 'ramda'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useMemo } from 'react'
 import { useFormState } from 'react-dom'
 
 import { useStore } from '@/store/stepsStore'
@@ -63,9 +63,15 @@ const action =
   }
 
 const InitiatePlanHeader = observer((): ReactElement => {
-  const store = useStore()
+  const { draftPlan, createDraftPlan } = useStore()
+  const plan = useMemo(() => {
+    return !draftPlan || draftPlan?.isConsumed ? null : draftPlan
+  }, [draftPlan])
   const router = useRouter()
-  const [state, setState] = useFormState(action(store.createDraftPlan), store.draftPlan)
+  const [state, setState] = useFormState(
+    action(createDraftPlan),
+    draftPlan?.isConsumed ? {} : draftPlan
+  )
   if (state?.success) {
     router.push('createPlan')
   }
@@ -80,9 +86,11 @@ const InitiatePlanHeader = observer((): ReactElement => {
         name="planName"
         id="planName"
         placeholder="Plan Name"
-        defaultValue={store.draftPlan?.name ?? ''}
+        defaultValue={plan?.name ?? ''}
       />
-      {state?.planName?.errors}
+      {state?.errors?.planName?.errors.map((error: string) => {
+        return <div>{error}</div>
+      })}
 
       <label htmlFor="planDuration" className="mb-2">
         Plan Duration (Days):
@@ -92,9 +100,11 @@ const InitiatePlanHeader = observer((): ReactElement => {
         type="text"
         name="planDuration"
         placeholder="Enter plan duration"
-        defaultValue={store.draftPlan?.duration ?? ''}
+        defaultValue={plan?.duration ?? ''}
       />
-      {state?.planDuration?.errors}
+      {state?.errors?.planDuration?.errors.map((error: string) => {
+        return <div>{error}</div>
+      })}
 
       <button
         className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
