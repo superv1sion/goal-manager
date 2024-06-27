@@ -44,7 +44,6 @@ const PlanForm = observer((): ReactElement => {
   })
 
   const [formState, submitForm] = useFormState(addPlanAction(addPlan), null)
-  console.log(formState)
   return (
     <div className="px-8 py-6">
       <h3>Plan Name: {draftPlan.name}</h3>
