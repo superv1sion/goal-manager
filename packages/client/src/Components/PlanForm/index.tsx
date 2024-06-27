@@ -10,7 +10,8 @@ import { useStore } from '@/store/stepsStore'
 import { addPlanAction } from './action'
 
 const PlanForm = observer((): ReactElement => {
-  const { draftPlan, addPlan } = useStore()
+  const store = useStore()
+  const { draftPlan, addPlan, clearDraftPlan } = store
   const router = useRouter()
   if (!draftPlan) {
     router.push('/initiatePlan')
@@ -18,7 +19,12 @@ const PlanForm = observer((): ReactElement => {
   }
   const [buttonDisabled, setButtonDisabled] = useState(false)
 
-  const [formState, submitForm] = useFormState(addPlanAction(addPlan), null)
+  const [formState, submitForm] = useFormState(addPlanAction(addPlan, draftPlan), null)
+  if (formState?.success) {
+    store.draftPlan = null
+    router.push('plans')
+    return <></>
+  }
   return (
     <div className="px-8 py-6">
       <form action={submitForm} className="flex flex-col mb-8">

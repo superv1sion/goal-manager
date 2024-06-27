@@ -59,6 +59,9 @@ const getInitialPlan = (): Plan => ({
 const saveToLocalStorage = <T>(key: string, value: T): void => {
   localStorage.setItem(key, JSON.stringify(value))
 }
+const deleteFromLocalStorage = <T>(key: string): void => {
+  localStorage.removeItem(key)
+}
 const getFromLocalStorage = <Type>(key: string): Type | null => {
   const item = localStorage.getItem(key)
   if (item) {
@@ -79,9 +82,13 @@ class PlansStore {
     makeAutoObservable(this)
   }
 
-  set draftPlan(planObj: DraftPlan) {
+  set draftPlan(planObj: DraftPlan | null) {
     this._draftPlan = planObj
-    saveToLocalStorage<DraftPlan>('draftPlan', this._draftPlan)
+    if (this._draftPlan) {
+      saveToLocalStorage<DraftPlan>('draftPlan', this._draftPlan)
+    } else {
+      deleteFromLocalStorage('draftPlan')
+    }
   }
 
   get draftPlan(): DraftPlan | null {
@@ -89,6 +96,11 @@ class PlansStore {
       return this._draftPlan
     }
     return getFromLocalStorage<DraftPlan>('draftPlan')
+  }
+
+  clearDraftPlan() {
+    console.log(this)
+    this.draftPlan = null
   }
 
   createDraftPlan = (draftPlan: DraftPlan): void => {
@@ -109,6 +121,11 @@ class PlansStore {
     }
   }
 
+  set allPlans(plans: Plan[]) {
+    this._allPlans = plans
+    saveToLocalStorage('allPlans', this._allPlans)
+  }
+
   saveCurrentPlanToLocalStorage(): void {
     saveToLocalStorage('draftPlan', this.draftPlan)
   }
@@ -121,9 +138,12 @@ class PlansStore {
     const plan: Plan = {
       ...draftPlan,
       creationDate: new Date(),
-      planId: uuidv4(),
+      planId: draftPlan.planId ?? uuidv4(),
     }
-    this._allPlans = [...this._allPlans, plan]
+    this.allPlans = [
+      ...this.allPlans.filter((persistentPlan) => plan.planId !== persistentPlan.planId),
+      plan,
+    ]
     saveToLocalStorage('allPlans', this.allPlans)
   }
 
