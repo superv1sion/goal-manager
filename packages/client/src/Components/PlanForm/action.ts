@@ -11,7 +11,7 @@ const getFormPlanValues = (formData: FormData): { name: string; duration: number
     duration: parseInt(formData.get('planDuration') as string),
   }
 }
-export const addPlan = (
+export const addPlanAction = (
   prevState: (name: string, duration: number) => void,
   formData: FormData
 ): ((name: string, duration: number) => void) => {

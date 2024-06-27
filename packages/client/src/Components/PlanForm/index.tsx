@@ -1,24 +1,18 @@
 'use client'
-import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import React, { ReactElement, useContext, useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { useFormState } from 'react-dom'
 
 import StepComponent from '@/Components/StepComponent'
-import { StoreContext, useStore } from '@/store/stepsStore'
-import { DraftPlan } from '@/types/draftPlan'
+import { useStore } from '@/store/stepsStore'
 
-import { addPlan } from './action'
-// const getPlanInitialValue = (): DraftPlan => {
-//   return toJS(PlansStore.draftPlan)
-// }
+import { addPlanAction } from './action'
 
 const PlanForm = observer((): ReactElement => {
-  const store = useContext(StoreContext)
-
+  const { draftPlan, addPlan } = useStore()
   const [buttonDisabled, setButtonDisabled] = useState(false)
 
-  const steps = store?.draftPlan.steps.map((step, index, arr) => {
+  const steps = draftPlan.steps.map((step, index, arr) => {
     if (index === arr.length - 1) {
       return (
         <div className="row-start-2" key={index}>
@@ -42,12 +36,12 @@ const PlanForm = observer((): ReactElement => {
     )
   })
 
-  const [formState, submitForm] = useFormState(addPlan, store.addPlan)
+  const [formState, submitForm] = useFormState(addPlanAction, addPlan)
 
   return (
     <div className="px-8 py-6">
-      <h3>Plan Name: {store?.draftPlan.name}</h3>
-      <h3>Plan Duration: {store?.draftPlan?.duration}</h3>
+      <h3>Plan Name: {draftPlan.name}</h3>
+      <h3>Plan Duration: {draftPlan?.duration}</h3>
       <form action={submitForm} className="flex flex-col mb-8">
         {/* <label htmlFor="planName" className="mb-2"> */}
         {/*  Enter plan name */}

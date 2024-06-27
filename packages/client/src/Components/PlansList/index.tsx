@@ -1,16 +1,14 @@
 'use client'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import React, { useEffect } from 'react'
+import React from 'react'
 
-import PlanStore from '@/store/stepsStore'
+import { useStore } from '@/store/stepsStore'
 
-const PlansList = observer((): React.Element => {
-  useEffect(() => {
-    PlanStore.setAllPlans()
-  }, [])
+const PlansList = observer((): React.JSX.Element => {
+  const { allPlans } = useStore()
 
-  const plansItems = PlanStore.allPlans.map((plan, index) => {
+  const plans = allPlans.map((plan, index) => {
     return (
       <div className="flex justify-between text-center hover:border-2 rounded-lg" key={index}>
         <span className="w-[50%] flex justify-center items-center">
@@ -20,7 +18,7 @@ const PlansList = observer((): React.Element => {
         </span>
         <span className="w-[50%] flex justify-between *:p-2 *:w-1/2">
           <span>{plan.duration}</span>
-          <span>{plan.creationDate}</span>
+          <span>{plan.creationDate?.toString() ?? ''}</span>
         </span>
       </div>
     )
@@ -34,7 +32,7 @@ const PlansList = observer((): React.Element => {
           <span>Date of creation</span>
         </span>
       </div>
-      <div>{plansItems}</div>
+      <div>{plans}</div>
     </div>
   )
 })

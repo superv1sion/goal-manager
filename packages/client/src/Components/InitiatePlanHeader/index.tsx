@@ -3,9 +3,8 @@ import { observer } from 'mobx-react-lite'
 import { isEmpty, isNil } from 'ramda'
 import React, { ReactElement } from 'react'
 import { useFormState } from 'react-dom'
-import { v4 as uuidv4 } from 'uuid'
 
-import PlansStore from '@/store/stepsStore'
+import { useStore } from '@/store/stepsStore'
 
 type Predicate<T> = (value: T) => boolean
 type ValidationRule<T> = [Predicate<T>, string]
@@ -43,25 +42,27 @@ const validateDuration = (duration: number): ValidationResult => {
   return { fieldName: 'planDuration', errors }
 }
 
-const action = async (_: null, formData: FormData): Promise<any> => {
-  const duration = parseInt(formData.get('planDuration') as string)
-  const name = formData.get('planName') as string
-  const errors = [validateName(name), validateDuration(duration)]
-    .filter((validationResult) => !isEmpty(validationResult.errors))
-    .reduce(
-      (acc, validationResult) => ({ ...acc, [validationResult.fieldName]: validationResult }),
-      {}
-    )
-  if (!isEmpty(errors)) {
-    return { success: false, message: 'initiation failed', errors }
+const action =
+  (createDraftPlan: (name: string, duration: number) => void) =>
+  async (_: null, formData: FormData): Promise<any> => {
+    const duration = parseInt(formData.get('planDuration') as string)
+    const name = formData.get('planName') as string
+    const errors = [validateName(name), validateDuration(duration)]
+      .filter((validationResult) => !isEmpty(validationResult.errors))
+      .reduce(
+        (acc, validationResult) => ({ ...acc, [validationResult.fieldName]: validationResult }),
+        {}
+      )
+    if (!isEmpty(errors)) {
+      return { success: false, message: 'initiation failed', errors }
+    }
+    createDraftPlan(name, duration)
+    return { success: true, message: 'plan initiated successfully' }
   }
-  PlansStore.createDraftPlan(name, duration)
-  return { success: true, message: 'plan initiated successfully' }
-}
 
 const InitiatePlanHeader = observer((): ReactElement => {
-  const [state, setState] = useFormState(action, null)
-  console.log(state)
+  const store = useStore()
+  const [state, setState] = useFormState(action(store.createDraftPlan), null)
   return (
     <form action={setState} className="flex m-auto flex-col mb-8 px-8 py-6">
       <label htmlFor="planName" className="mb-2">

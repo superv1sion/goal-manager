@@ -56,8 +56,7 @@ const getInitialPlan = (): Plan => ({
   actions: [],
 })
 
-type PlanOrRecord = Plan | Record<string, Plan> | Partial<Plan>
-const saveToLocalStorage = <T extends PlanOrRecord>(key: string, value: T): void => {
+const saveToLocalStorage = <T>(key: string, value: T): void => {
   localStorage.setItem(key, JSON.stringify(value))
 }
 const getFromLocalStorage = <Type>(key: string): Type | null => {
@@ -67,31 +66,14 @@ const getFromLocalStorage = <Type>(key: string): Type | null => {
   }
   return null
 }
-const getAllPlansFromLocalStorage = <Type>(): Type => {
-  return getFromLocalStorage<Type>('allPlans')
-}
-
-const getPlanFromLocalStorage = <Type>(): Type => {
-  return getFromLocalStorage<Type>('currentPlan')
+const getAllPlansFromLocalStorage = <Type>(): Type[] => {
+  return getFromLocalStorage<Type[]>('allPlans') ?? ([] as Type[])
 }
 
 class PlansStore {
-  _allPlans: Record<string, Plan> = {
-    'bla-bla': {
-      ...getInitialPlan(),
-      name: 'name1',
-      duration: 1,
-      creationDate: new Date(),
-    },
-    'bla-bla-bla': {
-      ...getInitialPlan(),
-      name: 'name2',
-      duration: 2,
-      creationDate: new Date(),
-    },
-  }
+  public _allPlans: Plan[] = []
 
-  _draftPlan: DraftPlan | null = null
+  public _draftPlan: DraftPlan | null = null
 
   constructor() {
     makeAutoObservable(this)
@@ -116,12 +98,11 @@ class PlansStore {
     this.draftPlan = { steps: getInitialSteps(), actions: [], name, duration, planId: uuidv4() }
   }
 
-  get allPlans(): Record<string, Plan> {
-    if (Object.keys(this._allPlans).length > 2) {
+  get allPlans(): Plan[] {
+    if (this._allPlans.length > 2) {
       return this._allPlans
     } else {
-      const plansFromLocalStorage = getAllPlansFromLocalStorage()
-      return plansFromLocalStorage > 2 ? plansFromLocalStorage : []
+      return getAllPlansFromLocalStorage()
     }
   }
 
@@ -133,15 +114,13 @@ class PlansStore {
     this._allPlans = getAllPlansFromLocalStorage()
   }
 
-  addPlan = (name, duration): void => {
-    const plan = {
-      ...this.currentPlan,
-      name,
-      duration,
-      creationDate: new Date().toLocaleDateString(),
+  addPlan = (draftPlan: DraftPlan): void => {
+    const plan: Plan = {
+      ...draftPlan,
+      creationDate: new Date(),
       planId: uuidv4(),
     }
-    this._allPlans = [...this._allPlans, plan]
+    this._allPlans = { ...this._allPlans, [plan.planId]: plan }
     saveToLocalStorage('allPlans', this.allPlans)
   }
 
