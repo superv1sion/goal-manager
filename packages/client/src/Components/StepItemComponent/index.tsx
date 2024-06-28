@@ -9,25 +9,42 @@ import { Item } from '@/types/item'
 import IconCheckbox from '../IconCheckbox/index'
 
 interface StepItemComponentProps {
-  // item: Item
+  item: Item
   itemIndex: number
   stepNumber: number
   removeItem: (index: number) => void
+  onEditCallback?: (isEdit: boolean) => void
+  readOnly?: boolean
 }
 
 const StepItemComponent = observer(
-  ({ itemIndex, stepNumber, removeItem }: StepItemComponentProps): ReactElement => {
+  ({
+    item,
+    itemIndex,
+    onEditCallback,
+    stepNumber,
+    removeItem,
+    readOnly,
+  }: StepItemComponentProps): ReactElement => {
     const [isHovered, setIsHovered] = useState(false)
-    const [editing, setEditing] = useState(false)
+    const [editMode, setEditMode] = useState(false)
     const store = useStore()
     const { editItem, toggleCheck } = store
-    const item = store.draftPlan.steps[stepNumber].items[itemIndex]
+    // const item = store.draftPlan.steps[stepNumber].items[itemIndex]
 
     const handleCheckboxClick = (): void => {
       toggleCheck(stepNumber, itemIndex)
     }
     const editItemConfirm = (text: string): void => {
       editItem(stepNumber, itemIndex, text)
+    }
+    const enableEditMode = (): void => {
+      setEditMode(true)
+      if (onEditCallback) onEditCallback(true)
+    }
+    const disableEditMode = (): void => {
+      setEditMode(false)
+      if (onEditCallback) onEditCallback(false)
     }
 
     return (
@@ -37,33 +54,35 @@ const StepItemComponent = observer(
         onMouseOver={() => setIsHovered(true)}
         onMouseOut={() => setIsHovered(false)}
       >
-        {editing ? (
-          <ItemInput onConfirm={editItemConfirm} onBlurHandler={setEditing} />
+        {editMode ? (
+          <ItemInput onConfirm={editItemConfirm} disableEditeMode={disableEditMode} />
         ) : (
           <>
             {itemIndex + 1 + '. '}
             {item.text}
-            <span className="flex items-center">
-              <IconCheckbox
-                isChecked={item.isReady}
-                hovered={isHovered}
-                onClick={handleCheckboxClick}
-              />
+            {!readOnly ? (
+              <span className="flex items-center">
+                <IconCheckbox
+                  isChecked={item.isReady}
+                  hovered={isHovered}
+                  onClick={handleCheckboxClick}
+                />
 
-              <button className="mr-1 size-5" onClick={() => setEditing(true)}>
-                <PencilSquareIcon className="size-full self-end text-black-500" />
-              </button>
+                <button className="mr-1 size-5" onClick={enableEditMode}>
+                  <PencilSquareIcon className="size-full self-end text-black-500" />
+                </button>
 
-              <button
-                className="mr-1 size-5"
-                onClick={(e) => {
-                  e.preventDefault()
-                  removeItem(itemIndex)
-                }}
-              >
-                <TrashIcon className="size-full text-black-500" />
-              </button>
-            </span>
+                <button
+                  className="mr-1 size-5"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    removeItem(itemIndex)
+                  }}
+                >
+                  <TrashIcon className="size-full text-black-500" />
+                </button>
+              </span>
+            ) : null}
           </>
         )}
       </li>

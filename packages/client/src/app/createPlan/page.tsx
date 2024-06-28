@@ -20,9 +20,9 @@ const CreatePlan = observer((): ReactElement => {
   }
   return (
     <>
-      <StoreContext.Provider value={store}>
-        <PlanForm draftPlan={draftPlan} />
-      </StoreContext.Provider>
+      {/* <StoreContext.Provider value={store}> */}
+      <PlanForm draftPlan={draftPlan} />
+      {/* </StoreContext.Provider> */}
     </>
   )
 })

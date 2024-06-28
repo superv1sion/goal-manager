@@ -2,10 +2,10 @@ import { CheckIcon, TrashIcon } from '@heroicons/react/24/outline'
 import React, { ReactElement, useState } from 'react'
 
 interface Props {
-  onBlurHandler: (val: boolean) => void
+  disableEditeMode: () => void
   onConfirm: (text: string) => void
 }
-const ItemInput = ({ onBlurHandler, onConfirm }: Props): ReactElement => {
+const ItemInput = ({ disableEditeMode, onConfirm }: Props): ReactElement => {
   const [value, setValue] = useState('')
   return (
     <span className="flex justify-between">
@@ -24,7 +24,7 @@ const ItemInput = ({ onBlurHandler, onConfirm }: Props): ReactElement => {
             e.preventDefault()
             onConfirm(value)
             setValue('')
-            onBlurHandler(false)
+            disableEditeMode()
           }}
         >
           <CheckIcon />
@@ -32,7 +32,7 @@ const ItemInput = ({ onBlurHandler, onConfirm }: Props): ReactElement => {
         <button
           className="mr-1 size-5"
           onClick={() => {
-            onBlurHandler(false)
+            disableEditeMode()
           }}
         >
           <TrashIcon className="size-full text-black-500" />

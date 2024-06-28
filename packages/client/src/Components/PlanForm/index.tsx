@@ -39,9 +39,8 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
                 <div className="row-start-2" key={index}>
                   <StepComponent
                     stepNumber={index}
-                    disabled={buttonDisabled}
                     step={step}
-                    submitDisabler={setButtonDisabled}
+                    onEditCallback={(isEdit) => setButtonDisabled(isEdit)}
                   />
                 </div>
               )
@@ -50,8 +49,7 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
               <StepComponent
                 key={index}
                 stepNumber={index}
-                submitDisabler={setButtonDisabled}
-                disabled={buttonDisabled}
+                onEditCallback={(isEdit) => setButtonDisabled(isEdit)}
                 step={step}
               />
             )
