@@ -4,39 +4,40 @@ import React, { ReactElement, useState } from 'react'
 
 import ItemInput from '@/Components/ItemInput'
 import { useStore } from '@/store/stepsStore'
-import { Item } from '@/types/item'
+import { Task } from '@/types/task'
 
 import IconCheckbox from '../IconCheckbox/index'
 
 interface StepItemComponentProps {
-  item: Item
+  item: Task
   itemIndex: number
-  stepNumber: number
+  taskIdentifier: number | string
+  readOnly?: boolean
   removeItem: (index: number) => void
   onEditCallback?: (isEdit: boolean) => void
-  readOnly?: boolean
+  toggleCheck: (stepNumber: number, itemIndex: number) => void
+  editItem: (stepNumber: number, itemIndex: number, text: string) => void
 }
 
-const StepItemComponent = observer(
+const TaskComponent = observer(
   ({
     item,
     itemIndex,
     onEditCallback,
-    stepNumber,
+    taskIdentifier,
     removeItem,
     readOnly,
+    toggleCheck,
+    editItem,
   }: StepItemComponentProps): ReactElement => {
     const [isHovered, setIsHovered] = useState(false)
     const [editMode, setEditMode] = useState(false)
-    const store = useStore()
-    const { editItem, toggleCheck } = store
-    // const item = store.draftPlan.steps[stepNumber].items[itemIndex]
 
     const handleCheckboxClick = (): void => {
-      toggleCheck(stepNumber, itemIndex)
+      if (typeof taskIdentifier === 'number') toggleCheck(taskIdentifier, itemIndex)
     }
     const editItemConfirm = (text: string): void => {
-      editItem(stepNumber, itemIndex, text)
+      if (typeof taskIdentifier === 'number') editItem(taskIdentifier, itemIndex, text)
     }
     const enableEditMode = (): void => {
       setEditMode(true)
@@ -90,4 +91,4 @@ const StepItemComponent = observer(
   }
 )
 
-export default StepItemComponent
+export default TaskComponent

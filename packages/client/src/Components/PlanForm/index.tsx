@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import React, { ReactElement, useState } from 'react'
 import { useFormState } from 'react-dom'
 
+import ActionsSection from '@/Components/ActionsSectionComponent'
 import StepComponent from '@/Components/StepComponent'
 import { useStore } from '@/store/stepsStore'
 import { DraftPlan } from '@/types/draftPlan'
@@ -55,6 +56,10 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
             )
           })}
         </div>
+        <ActionsSection
+          actions={draftPlan.actions}
+          onEditCallback={(isEdit) => setButtonDisabled(isEdit)}
+        />
 
         <button
           disabled={buttonDisabled}

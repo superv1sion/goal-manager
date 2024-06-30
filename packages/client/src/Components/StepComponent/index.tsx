@@ -2,9 +2,9 @@
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import { observer } from 'mobx-react-lite'
 import React, { ReactElement, useState } from 'react'
+import TaskComponent from 'src/Components/TaskComponent'
 
 import ItemInput from '@/Components/ItemInput'
-import StepItemComponent from '@/Components/StepItemComponent'
 import { useStore } from '@/store/stepsStore'
 import { Step } from '@/types/step'
 
@@ -18,7 +18,7 @@ interface StepProps {
 const StepComponent = observer(
   ({ step, onEditCallback, stepNumber, readOnly }: StepProps): ReactElement => {
     const { items, number, title } = step
-    const { addItem, removeItem } = useStore()
+    const { addItem, removeItem, toggleCheck, editItem } = useStore()
     const [editMode, setEditMode] = useState(false)
     // const [itemsList, setItemsList] = useState(items)
 
@@ -41,14 +41,16 @@ const StepComponent = observer(
       }
     }
     const itemComponentsList = items.map((item, index) => (
-      <StepItemComponent
+      <TaskComponent
         item={item}
         itemIndex={index}
         removeItem={removeItemHandler}
         key={index}
-        stepNumber={stepNumber}
+        taskIdentifier={stepNumber}
         onEditCallback={onEditCallback}
         readOnly={readOnly}
+        toggleCheck={toggleCheck}
+        editItem={editItem}
       />
     ))
 

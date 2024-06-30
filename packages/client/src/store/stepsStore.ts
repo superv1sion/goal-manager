@@ -4,10 +4,11 @@ import { omit } from 'ramda'
 import React from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { Actions } from '@/types/actions'
 import { DraftPlan } from '@/types/draftPlan'
-import { Item } from '@/types/item'
 import { Plan } from '@/types/plan'
 import { Step } from '@/types/step'
+import { Task } from '@/types/task'
 
 configure({ enforceActions: 'always' })
 
@@ -48,14 +49,19 @@ const getInitialSteps = (): Step[] => [
     items: [],
   },
 ]
-const getInitialPlan = (): Plan => ({
-  name: '',
-  duration: null,
-  creationDate: null,
-  planId: '',
-  steps: getInitialSteps(),
-  actions: [],
+const getInitialActions = (): Actions => ({
+  stepsNow: [] as Task[],
+  tomorrow: [] as Task[],
+  dayAfter: [] as Task[],
 })
+// const getInitialPlan = (): Plan => ({
+//   name: '',
+//   duration: null,
+//   creationDate: null,
+//   planId: '',
+//   steps: getInitialSteps(),
+//   actions: [],
+// })
 
 const saveToLocalStorage = <T>(key: string, value: T): void => {
   localStorage.setItem(key, JSON.stringify(value))
@@ -108,7 +114,7 @@ class PlansStore {
   createDraftPlan = (draftPlan: DraftPlan): void => {
     this.draftPlan = {
       steps: draftPlan.steps ?? getInitialSteps(),
-      actions: draftPlan.actions ?? [],
+      actions: draftPlan.actions ?? getInitialActions(),
       name: draftPlan.name,
       duration: draftPlan.duration,
       planId: draftPlan.planId ?? uuidv4(),
@@ -158,12 +164,25 @@ class PlansStore {
     if (!this.draftPlan) {
       return
     }
-    const newItem: Item = {
+    const newItem: Task = {
       text,
       isReady: false,
       requiresFulfillment: false,
     }
     this.draftPlan.steps[stepIdx].items.push(newItem)
+    this.saveCurrentPlanToLocalStorage()
+  }
+
+  addAction = (actionKey: string, text: string): void => {
+    if (!this.draftPlan) {
+      return
+    }
+    const newItem: Task = {
+      text,
+      isReady: false,
+      requiresFulfillment: false,
+    }
+    this.draftPlan.actions[actionKey].push(newItem)
     this.saveCurrentPlanToLocalStorage()
   }
 
@@ -198,6 +217,15 @@ class PlansStore {
     }
     this.draftPlan.steps[stepIdx].items[itemIdx].isReady =
       !this.draftPlan.steps[stepIdx].items[itemIdx].isReady
+    this.saveCurrentPlanToLocalStorage()
+  }
+
+  toggleActionCheck = (actionsKey: string, actionIndex: number): void => {
+    if (!this.draftPlan) {
+      return
+    }
+    this.draftPlan.actions[actionsKey][actionIndex].isReady =
+      !this.draftPlan.actions[actionsKey][actionIndex].isReady
     this.saveCurrentPlanToLocalStorage()
   }
 }

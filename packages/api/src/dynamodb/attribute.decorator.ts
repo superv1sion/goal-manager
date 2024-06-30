@@ -1,5 +1,5 @@
 import { ModelType } from 'dynamoose/dist/General';
-import { Item } from 'dynamoose/dist/Item';
+import { Item } from 'dynamoose/dist/Task';
 import { Schema, SchemaDefinition } from 'dynamoose/dist/Schema';
 
 import { getDatabaseMetadataStorage } from './database-metadata-storage';

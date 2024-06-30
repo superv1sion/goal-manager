@@ -1,4 +1,4 @@
-import { Action } from '@/types/action'
+import { Actions } from '@/types/actions'
 import { Step } from '@/types/step'
 
 export interface DraftPlan {
@@ -6,6 +6,6 @@ export interface DraftPlan {
   planId?: string
   duration: number | null
   steps: Step[]
-  actions: Action[]
+  actions: Actions
   isConsumed?: boolean
 }

@@ -2,7 +2,7 @@ import { initializeDynamoDB } from './initialize-dynamodb';
 import AsyncLock from 'async-lock';
 import { model } from 'dynamoose';
 import { ModelType, ObjectType } from 'dynamoose/dist/General';
-import { Item } from 'dynamoose/dist/Item';
+import { Item } from 'dynamoose/dist/Task';
 import { Schema, SchemaDefinition } from 'dynamoose/dist/Schema';
 import { ClassConstructor, plainToClass } from 'class-transformer';
 import { AttributeDefinition } from './attribute.decorator';

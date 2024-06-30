@@ -1,4 +1,4 @@
-export interface Item {
+export interface Task {
   text: string
   isReady: boolean
   requiresFulfillment: boolean

@@ -1,7 +1,7 @@
-import { Item } from '@/types/item'
+import { Task } from '@/types/task'
 
 export interface Step {
   number: number
   title: string
-  items: Item[]
+  items: Task[]
 }
