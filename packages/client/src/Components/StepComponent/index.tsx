@@ -11,12 +11,13 @@ import { Step } from '@/types/step'
 interface StepProps {
   step: Step
   stepNumber: number
-  onEditCallback?: (isEdit: boolean) => void
+  onEditStart?: () => void
+  onEditEnd?: () => void
   readOnly?: boolean
 }
 
 const StepComponent = observer(
-  ({ step, onEditCallback, stepNumber, readOnly }: StepProps): ReactElement => {
+  ({ step, onEditStart, onEditEnd, stepNumber, readOnly }: StepProps): ReactElement => {
     const { items, number, title } = step
     const { addItem, removeItem, toggleCheck, editItem } = useStore()
     const [editMode, setEditMode] = useState(false)
@@ -28,16 +29,22 @@ const StepComponent = observer(
     const removeItemHandler = (index: number): void => {
       removeItem(stepNumber, index)
     }
+    const toggleCheckHandler = (index: number): void => {
+      toggleCheck(stepNumber, index)
+    }
+    const editItemHandler = (index: number, text: string): void => {
+      editItem(stepNumber, index, text)
+    }
     const enableEditMode = (): void => {
-      if (onEditCallback) {
+      if (onEditStart) {
         setEditMode(true)
-        onEditCallback(true)
+        onEditStart()
       }
     }
     const disableEditMode = (): void => {
-      if (onEditCallback) {
+      if (onEditEnd) {
         setEditMode(false)
-        onEditCallback(false)
+        onEditEnd()
       }
     }
     const itemComponentsList = items.map((item, index) => (
@@ -47,15 +54,16 @@ const StepComponent = observer(
         removeItem={removeItemHandler}
         key={index}
         taskIdentifier={stepNumber}
-        onEditCallback={onEditCallback}
+        onEditStart={onEditStart}
+        onEditEnd={onEditEnd}
         readOnly={readOnly}
-        toggleCheck={toggleCheck}
-        editItem={editItem}
+        toggleCheck={toggleCheckHandler}
+        editItem={editItemHandler}
       />
     ))
 
     return (
-      <div className="bg-amber-300 h-72  w-80 rounded flex flex-col">
+      <div className="bg-amber-300 h-52  w-72 rounded flex flex-col">
         <h4 className="text-center border-b border-slate-500 tracking-[.1em] font-semibold py-2">
           Step
           <span className="bg-black text-amber-300 m-1 rounded-full size-6 text-center inline-flex items-center justify-center">

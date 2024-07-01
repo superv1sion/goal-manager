@@ -4,44 +4,65 @@ import * as React from 'react'
 import { useState } from 'react'
 
 import ItemInput from '@/Components/ItemInput'
+import TaskComponent from '@/Components/TaskComponent'
 import { useStore } from '@/store/stepsStore'
 import { Task } from '@/types/task'
 
 interface Props {
   actions: Task[]
   actionsKey: string
-  onEditCallback?: (isEdit: boolean) => void
+  onEditStart?: () => void
+  onEditEnd?: () => void
   readOnly?: boolean
 }
 const ActionsComponent = observer(
-  ({ actionsKey, actions, readOnly, onEditCallback }: Props): React.JSX.Element => {
+  ({ actionsKey, actions, readOnly, onEditStart, onEditEnd }: Props): React.JSX.Element => {
     const [editMode, setEditMode] = useState(false)
 
-    const { addAction } = useStore()
+    const { addAction, removeAction, toggleActionCheck, editAction } = useStore()
     const addNewAction = (text: string): void => {
       addAction(actionsKey, text)
     }
+    const removeActionHandler = (index: number): void => {
+      removeAction(actionsKey, index)
+    }
+    const toggleCheckHandler = (index: number): void => {
+      toggleActionCheck(actionsKey, index)
+    }
+    const editActionHandler = (index: number, text: string): void => {
+      editAction(actionsKey, index, text)
+    }
     const enableEditMode = (): void => {
-      if (onEditCallback) {
+      if (onEditStart) {
         setEditMode(true)
-        onEditCallback(true)
+        onEditStart()
       }
     }
     const disableEditMode = (): void => {
-      if (onEditCallback) {
+      if (onEditEnd) {
         setEditMode(false)
-        onEditCallback(false)
+        onEditEnd()
       }
     }
     return (
-      <div className="bg-amber-300 h-72  w-80 rounded flex flex-col">
+      <div className="bg-amber-300 h-52  w-72 rounded flex flex-col">
         <h4 className="text-center border-b border-slate-500 tracking-[.1em] font-semibold py-2">
           {actionsKey}
         </h4>
-        <div className="bg-amber-200 h-5/6 px-3 py-2">
+        <div className="bg-amber-200 h-4/6 px-3 py-2">
           <ul>
             {actions.map((action, index) => (
-              <div key={index} />
+              <TaskComponent
+                item={action}
+                itemIndex={index}
+                key={index}
+                taskIdentifier={actionsKey}
+                removeItem={removeActionHandler}
+                toggleCheck={toggleCheckHandler}
+                editItem={editActionHandler}
+                onEditStart={onEditStart}
+                onEditEnd={onEditEnd}
+              />
             ))}
           </ul>
           {editMode ? (

@@ -14,16 +14,18 @@ interface StepItemComponentProps {
   taskIdentifier: number | string
   readOnly?: boolean
   removeItem: (index: number) => void
-  onEditCallback?: (isEdit: boolean) => void
-  toggleCheck: (stepNumber: number, itemIndex: number) => void
-  editItem: (stepNumber: number, itemIndex: number, text: string) => void
+  onEditStart?: () => void
+  onEditEnd?: () => void
+  toggleCheck: (itemIndex: number) => void
+  editItem: (itemIndex: number, text: string) => void
 }
 
 const TaskComponent = observer(
   ({
     item,
     itemIndex,
-    onEditCallback,
+    onEditStart,
+    onEditEnd,
     taskIdentifier,
     removeItem,
     readOnly,
@@ -34,18 +36,18 @@ const TaskComponent = observer(
     const [editMode, setEditMode] = useState(false)
 
     const handleCheckboxClick = (): void => {
-      if (typeof taskIdentifier === 'number') toggleCheck(taskIdentifier, itemIndex)
+      toggleCheck(itemIndex)
     }
     const editItemConfirm = (text: string): void => {
-      if (typeof taskIdentifier === 'number') editItem(taskIdentifier, itemIndex, text)
+      editItem(itemIndex, text)
     }
     const enableEditMode = (): void => {
       setEditMode(true)
-      if (onEditCallback) onEditCallback(true)
+      if (onEditStart) onEditStart()
     }
     const disableEditMode = (): void => {
       setEditMode(false)
-      if (onEditCallback) onEditCallback(false)
+      if (onEditEnd) onEditEnd()
     }
 
     return (

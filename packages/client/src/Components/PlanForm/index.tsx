@@ -20,55 +20,66 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
     consumeDraftPlan()
     return <></>
   }
+  const onEditStart = (): void => {
+    setButtonDisabled(true)
+  }
+  const onEditEnd = (): void => {
+    setButtonDisabled(false)
+  }
   return (
     <div className="px-8 py-6">
-      <form action={submitForm} className="flex flex-col mb-8">
-        <h3>Plan Name: {draftPlan.name}</h3>
-        <h3>Plan Duration: {draftPlan?.duration}</h3>
-        <button
-          type="button"
-          onClick={() => router.push('/initiatePlan')}
-          className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
+      <form action={submitForm} className="flex">
+        <div className="flex flex-col mb-8 mr-5">
+          <h3>Plan Name: {draftPlan.name}</h3>
+          <h3>Plan Duration: {draftPlan?.duration}</h3>
+          <button
+            type="button"
+            onClick={() => router.push('/initiatePlan')}
+            className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
            hover:bg-sky-700 disabled:bg-slate-400 disabled:cursor-not-allowed`}
-        >
-          Back
-        </button>
-        <div className="grid grid-rows-3 grid-flow-col size-fit gap-1">
-          {draftPlan.steps.map((step, index, arr) => {
-            if (index === arr.length - 1) {
+          >
+            Back
+          </button>
+          <div className="grid grid-rows-3 grid-flow-col size-fit gap-1">
+            {draftPlan.steps.map((step, index, arr) => {
+              if (index === arr.length - 1) {
+                return (
+                  <div className="row-start-2" key={index}>
+                    <StepComponent
+                      stepNumber={index}
+                      step={step}
+                      onEditStart={onEditStart}
+                      onEditEnd={onEditEnd}
+                    />
+                  </div>
+                )
+              }
               return (
-                <div className="row-start-2" key={index}>
-                  <StepComponent
-                    stepNumber={index}
-                    step={step}
-                    onEditCallback={(isEdit) => setButtonDisabled(isEdit)}
-                  />
-                </div>
+                <StepComponent
+                  key={index}
+                  stepNumber={index}
+                  onEditStart={onEditStart}
+                  onEditEnd={onEditEnd}
+                  step={step}
+                />
               )
-            }
-            return (
-              <StepComponent
-                key={index}
-                stepNumber={index}
-                onEditCallback={(isEdit) => setButtonDisabled(isEdit)}
-                step={step}
-              />
-            )
-          })}
+            })}
+          </div>
+
+          <button
+            disabled={buttonDisabled}
+            type="submit"
+            className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
+           hover:bg-sky-700 disabled:bg-slate-400 disabled:cursor-not-allowed`}
+          >
+            Create Plan
+          </button>
         </div>
         <ActionsSection
           actions={draftPlan.actions}
-          onEditCallback={(isEdit) => setButtonDisabled(isEdit)}
+          onEditEnd={onEditEnd}
+          onEditStart={onEditStart}
         />
-
-        <button
-          disabled={buttonDisabled}
-          type="submit"
-          className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
-           hover:bg-sky-700 disabled:bg-slate-400 disabled:cursor-not-allowed`}
-        >
-          Create Plan
-        </button>
       </form>
     </div>
   )

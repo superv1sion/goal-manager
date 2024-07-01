@@ -6,18 +6,20 @@ import { Actions } from '@/types/actions'
 
 interface Props {
   actions: Actions
-  onEditCallback?: (isEdit: boolean) => void
+  onEditStart?: () => void
+  onEditEnd?: () => void
 }
-const ActionsSection = ({ actions, onEditCallback }: Props): React.JSX.Element => {
+const ActionsSection = ({ actions, onEditStart, onEditEnd }: Props): React.JSX.Element => {
   return (
-    <div className="self-end">
+    <div className="self-center">
       {Object.entries(actions).map(([key, value]) => {
         return (
           <ActionsComponent
             actions={value}
             actionsKey={key}
             key={key}
-            onEditCallback={onEditCallback}
+            onEditStart={onEditStart}
+            onEditEnd={onEditEnd}
           />
         )
       })}

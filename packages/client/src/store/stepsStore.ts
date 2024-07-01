@@ -1,5 +1,5 @@
 'use client'
-import { configure, makeAutoObservable, runInAction } from 'mobx'
+import { action, configure, makeAutoObservable, runInAction } from 'mobx'
 import { omit } from 'ramda'
 import React from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -182,7 +182,14 @@ class PlansStore {
       isReady: false,
       requiresFulfillment: false,
     }
-    this.draftPlan.actions[actionKey].push(newItem)
+    // this.draftPlan.actions[actionKey].push(newItem)
+    const newTasks = [...this.draftPlan.actions[actionKey], newItem]
+    const actions = { ...this.draftPlan.actions, [actionKey]: newTasks }
+
+    this.draftPlan = {
+      ...this.draftPlan,
+      actions,
+    }
     this.saveCurrentPlanToLocalStorage()
   }
 
@@ -198,6 +205,19 @@ class PlansStore {
     this.saveCurrentPlanToLocalStorage()
   }
 
+  removeAction = (actionKey: string, actionIdx: number): void => {
+    if (!this.draftPlan) {
+      return
+    }
+    const filteredTasks = this.draftPlan.actions[actionKey].filter(
+      (item, index) => index !== actionIdx
+    )
+    const actions = { ...this.draftPlan.actions, [actionKey]: filteredTasks }
+
+    this.draftPlan = { ...this.draftPlan, actions }
+    this.saveCurrentPlanToLocalStorage()
+  }
+
   editItem = (stepIdx: number, itemIdx: number, newText: string): void => {
     runInAction(() => {
       if (!this.draftPlan) {
@@ -207,6 +227,30 @@ class PlansStore {
         ...this.draftPlan.steps[stepIdx].items[itemIdx],
         text: newText,
       }
+      this.saveCurrentPlanToLocalStorage()
+    })
+  }
+
+  editAction = (actionsKey: string, actionIndex: number, newText: string): void => {
+    console.log(newText)
+    runInAction(() => {
+      if (!this.draftPlan) {
+        return
+      }
+      const newTasks = this.draftPlan.actions[actionsKey].map((task, index): Task => {
+        if (index === actionIndex) {
+          return { ...task, text: newText }
+        }
+        return task
+      })
+      console.log(newTasks)
+      const actions = { ...this.draftPlan.actions, [actionsKey]: newTasks }
+      console.log(actions)
+      this.draftPlan = {
+        ...this.draftPlan,
+        actions,
+      }
+      console.log(this.draftPlan)
       this.saveCurrentPlanToLocalStorage()
     })
   }
@@ -224,8 +268,14 @@ class PlansStore {
     if (!this.draftPlan) {
       return
     }
-    this.draftPlan.actions[actionsKey][actionIndex].isReady =
-      !this.draftPlan.actions[actionsKey][actionIndex].isReady
+    const newTasks = this.draftPlan.actions[actionsKey].map((task, index): Task => {
+      if (index === actionIndex) {
+        return { ...task, isReady: !task.isReady }
+      }
+      return task
+    })
+    const actions = { ...this.draftPlan.actions, [actionsKey]: newTasks }
+    this.draftPlan = { ...this.draftPlan, actions }
     this.saveCurrentPlanToLocalStorage()
   }
 }
