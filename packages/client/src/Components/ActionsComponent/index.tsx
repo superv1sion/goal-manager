@@ -18,6 +18,7 @@ interface Props {
 const ActionsComponent = observer(
   ({ actionsKey, actions, readOnly, onEditStart, onEditEnd }: Props): React.JSX.Element => {
     const [editMode, setEditMode] = useState(false)
+    const [addButtonDisable, setAddButtonDisable] = useState(false)
 
     const { addAction, removeAction, toggleActionCheck, editAction } = useStore()
     const addNewAction = (text: string): void => {
@@ -33,14 +34,20 @@ const ActionsComponent = observer(
       editAction(actionsKey, index, text)
     }
     const enableEditMode = (): void => {
+      setEditMode(true)
+    }
+    const disableButtons = (): void => {
       if (onEditStart) {
-        setEditMode(true)
         onEditStart()
+        setAddButtonDisable(true)
       }
     }
     const disableEditMode = (): void => {
+      setEditMode(false)
+    }
+    const enableButtons = (): void => {
       if (onEditEnd) {
-        setEditMode(false)
+        setAddButtonDisable(false)
         onEditEnd()
       }
     }
@@ -60,21 +67,26 @@ const ActionsComponent = observer(
                 removeItem={removeActionHandler}
                 toggleCheck={toggleCheckHandler}
                 editItem={editActionHandler}
-                onEditStart={onEditStart}
-                onEditEnd={onEditEnd}
+                enableButtons={enableButtons}
+                disableButtons={disableButtons}
               />
             ))}
           </ul>
           {editMode ? (
-            <ItemInput onConfirm={addNewAction} disableEditeMode={disableEditMode} />
+            <ItemInput
+              onConfirm={addNewAction}
+              disableEditeMode={disableEditMode}
+              enableButtons={enableButtons}
+            />
           ) : null}
         </div>
         <button
           className="size-fit mx-3 my-1 rounded-full text-amber-950 disabled:text-amber-400 disabled:cursor-not-allowed"
-          disabled={editMode}
+          disabled={addButtonDisable}
           onClick={(e) => {
             e.preventDefault()
             enableEditMode()
+            disableButtons()
           }}
         >
           {!readOnly ? <PlusCircleIcon className="size-7 self-center" /> : null}

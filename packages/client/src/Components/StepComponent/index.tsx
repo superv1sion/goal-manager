@@ -1,7 +1,7 @@
 'use client'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import { observer } from 'mobx-react-lite'
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import TaskComponent from 'src/Components/TaskComponent'
 
 import ItemInput from '@/Components/ItemInput'
@@ -21,8 +21,36 @@ const StepComponent = observer(
     const { items, number, title } = step
     const { addItem, removeItem, toggleCheck, editItem } = useStore()
     const [editMode, setEditMode] = useState(false)
+    const [addButtonDisable, setAddButtonDisable] = useState(false)
     // const [itemsList, setItemsList] = useState(items)
+    const ref = useRef<HTMLDivElement>(null)
 
+    const disableEditMode = (): void => {
+      setEditMode(false)
+    }
+
+    const clickOutsideComponent = (event: MouseEvent): void => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        disableEditMode()
+        enableButtons()
+      }
+    }
+    useEffect(() => {
+      if (addButtonDisable) {
+        document.addEventListener('mousedown', clickOutsideComponent)
+      } else {
+        document.removeEventListener('mousedown', clickOutsideComponent)
+      }
+      return () => {
+        document.removeEventListener('mousedown', clickOutsideComponent)
+      }
+    }, [addButtonDisable])
+    const addOutsideClickListener = (): void => {
+      document.addEventListener('click', clickOutsideComponent)
+    }
+    const removeOutsideClickListener = (): void => {
+      document.removeEventListener('click', clickOutsideComponent)
+    }
     const addNewItem = (text: string): void => {
       addItem(stepNumber, text)
     }
@@ -36,15 +64,21 @@ const StepComponent = observer(
       editItem(stepNumber, index, text)
     }
     const enableEditMode = (): void => {
+      setEditMode(true)
+    }
+    const disableButtons = (): void => {
       if (onEditStart) {
-        setEditMode(true)
         onEditStart()
+        setAddButtonDisable(true)
+        // addOutsideClickListener()
       }
     }
-    const disableEditMode = (): void => {
+
+    const enableButtons = (): void => {
       if (onEditEnd) {
-        setEditMode(false)
+        setAddButtonDisable(false)
         onEditEnd()
+        // removeOutsideClickListener()
       }
     }
     const itemComponentsList = items.map((item, index) => (
@@ -54,16 +88,18 @@ const StepComponent = observer(
         removeItem={removeItemHandler}
         key={index}
         taskIdentifier={stepNumber}
-        onEditStart={onEditStart}
-        onEditEnd={onEditEnd}
         readOnly={readOnly}
         toggleCheck={toggleCheckHandler}
         editItem={editItemHandler}
+        enableButtons={enableButtons}
+        disableButtons={disableButtons}
+        addListener={addOutsideClickListener}
+        removeListener={removeOutsideClickListener}
       />
     ))
 
     return (
-      <div className="bg-amber-300 h-52  w-72 rounded flex flex-col">
+      <div className="bg-amber-300 h-52  w-72 rounded flex flex-col" ref={ref}>
         <h4 className="text-center border-b border-slate-500 tracking-[.1em] font-semibold py-2">
           Step
           <span className="bg-black text-amber-300 m-1 rounded-full size-6 text-center inline-flex items-center justify-center">
@@ -74,15 +110,22 @@ const StepComponent = observer(
         <div className="bg-amber-200 h-5/6 px-3 py-2">
           <ul>{itemComponentsList}</ul>
           {editMode ? (
-            <ItemInput onConfirm={addNewItem} disableEditeMode={disableEditMode} />
+            <ItemInput
+              onConfirm={addNewItem}
+              enableButtons={enableButtons}
+              disableEditeMode={disableEditMode}
+              addListener={addOutsideClickListener}
+              removeListener={removeOutsideClickListener}
+            />
           ) : null}
         </div>
         <button
           className="size-fit mx-3 my-1 rounded-full text-amber-950 disabled:text-amber-400 disabled:cursor-not-allowed"
-          disabled={editMode}
+          disabled={addButtonDisable}
           onClick={(e) => {
             e.preventDefault()
             enableEditMode()
+            disableButtons()
           }}
         >
           {!readOnly ? <PlusCircleIcon className="size-7 self-center" /> : null}

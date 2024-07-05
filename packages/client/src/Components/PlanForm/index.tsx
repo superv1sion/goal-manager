@@ -75,11 +75,11 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
             Create Plan
           </button>
         </div>
-        <ActionsSection
-          actions={draftPlan.actions}
-          onEditEnd={onEditEnd}
-          onEditStart={onEditStart}
-        />
+        {/* <ActionsSection */}
+        {/*  actions={draftPlan.actions} */}
+        {/*  onEditEnd={onEditEnd} */}
+        {/*  onEditStart={onEditStart} */}
+        {/* /> */}
       </form>
     </div>
   )

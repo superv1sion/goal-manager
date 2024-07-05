@@ -1,6 +1,6 @@
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { observer } from 'mobx-react-lite'
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 
 import ItemInput from '@/Components/ItemInput'
 import { useStore } from '@/store/stepsStore'
@@ -14,26 +14,39 @@ interface StepItemComponentProps {
   taskIdentifier: number | string
   readOnly?: boolean
   removeItem: (index: number) => void
-  onEditStart?: () => void
-  onEditEnd?: () => void
   toggleCheck: (itemIndex: number) => void
   editItem: (itemIndex: number, text: string) => void
+  enableButtons?: () => void
+  disableButtons?: () => void
+  addListener: () => void
+  removeListener: () => void
 }
 
 const TaskComponent = observer(
   ({
     item,
     itemIndex,
-    onEditStart,
-    onEditEnd,
-    taskIdentifier,
     removeItem,
     readOnly,
     toggleCheck,
     editItem,
+    enableButtons,
+    disableButtons,
+    addListener,
+    removeListener,
   }: StepItemComponentProps): ReactElement => {
     const [isHovered, setIsHovered] = useState(false)
     const [editMode, setEditMode] = useState(false)
+    useEffect(() => {
+      if (editMode) {
+        addListener()
+      } else {
+        removeListener()
+      }
+      return () => {
+        removeListener()
+      }
+    }, [addListener, editMode, removeListener])
 
     const handleCheckboxClick = (): void => {
       toggleCheck(itemIndex)
@@ -43,11 +56,11 @@ const TaskComponent = observer(
     }
     const enableEditMode = (): void => {
       setEditMode(true)
-      if (onEditStart) onEditStart()
+      if (disableButtons) disableButtons()
     }
     const disableEditMode = (): void => {
       setEditMode(false)
-      if (onEditEnd) onEditEnd()
+      if (enableButtons) enableButtons()
     }
 
     return (
@@ -58,7 +71,13 @@ const TaskComponent = observer(
         onMouseOut={() => setIsHovered(false)}
       >
         {editMode ? (
-          <ItemInput onConfirm={editItemConfirm} disableEditeMode={disableEditMode} />
+          <ItemInput
+            onConfirm={editItemConfirm}
+            enableButtons={enableButtons}
+            disableEditeMode={disableEditMode}
+            addListener={addListener}
+            removeListener={removeListener}
+          />
         ) : (
           <>
             {itemIndex + 1 + '. '}
@@ -71,12 +90,15 @@ const TaskComponent = observer(
                   onClick={handleCheckboxClick}
                 />
 
-                <button className="mr-1 size-5" onClick={enableEditMode}>
+                <button
+                  className={`mr-1 size-5 ${isHovered ? '' : 'hidden'}`}
+                  onClick={enableEditMode}
+                >
                   <PencilSquareIcon className="size-full self-end text-black-500" />
                 </button>
 
                 <button
-                  className="mr-1 size-5"
+                  className={`mr-1 size-5 ${isHovered ? '' : 'hidden'}`}
                   onClick={(e) => {
                     e.preventDefault()
                     removeItem(itemIndex)
