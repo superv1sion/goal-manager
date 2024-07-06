@@ -8,13 +8,15 @@ interface Props {
   addListener: () => void
   removeListener: () => void
 }
+// ItemComponent, not ItemInput
 const ItemInput = ({
   disableEditeMode,
   addListener,
   removeListener,
-  enableButtons,
+  enableButtons, // which buttons?
   onConfirm,
-}: Props): ReactElement => {
+}: // onEdit, onSave, onDelete, onClickOutside (possibly)
+Props): ReactElement => {
   const [value, setValue] = useState('')
   useEffect(() => {
     addListener()

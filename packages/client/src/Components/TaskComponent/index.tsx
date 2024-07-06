@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite'
 import React, { ReactElement, useEffect, useState } from 'react'
 
 import ItemInput from '@/Components/ItemInput'
-import { useStore } from '@/store/stepsStore'
 import { Task } from '@/types/task'
 
 import IconCheckbox from '../IconCheckbox/index'
@@ -30,11 +29,12 @@ const TaskComponent = observer(
     readOnly,
     toggleCheck,
     editItem,
-    enableButtons,
-    disableButtons,
+    enableButtons, // which buttons?
+    disableButtons, // which buttons?
     addListener,
     removeListener,
-  }: StepItemComponentProps): ReactElement => {
+  }: // onChange, onEditStart, onAddItem, onSaveItem etc
+  StepItemComponentProps): ReactElement => {
     const [isHovered, setIsHovered] = useState(false)
     const [editMode, setEditMode] = useState(false)
     useEffect(() => {
