@@ -20,10 +20,10 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
     consumeDraftPlan()
     return <></>
   }
-  const onEditStart = (): void => {
+  const onEditPlanStart = (): void => {
     setButtonDisabled(true)
   }
-  const onEditEnd = (): void => {
+  const onEditPlanEnd = (): void => {
     setButtonDisabled(false)
   }
   return (
@@ -48,8 +48,8 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
                     <StepComponent
                       stepNumber={index}
                       step={step}
-                      onEditStart={onEditStart}
-                      onEditEnd={onEditEnd}
+                      onEditStart={onEditPlanStart}
+                      onEditEnd={onEditPlanEnd}
                     />
                   </div>
                 )
@@ -58,8 +58,8 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
                 <StepComponent
                   key={index}
                   stepNumber={index}
-                  onEditStart={onEditStart}
-                  onEditEnd={onEditEnd}
+                  onEditStart={onEditPlanStart}
+                  onEditEnd={onEditPlanEnd}
                   step={step}
                 />
               )

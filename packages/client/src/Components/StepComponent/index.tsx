@@ -7,6 +7,7 @@ import TaskComponent from 'src/Components/TaskComponent'
 import ItemInput from '@/Components/ItemInput'
 import { useStore } from '@/store/stepsStore'
 import { Step } from '@/types/step'
+import { Task } from '@/types/task'
 
 interface StepProps {
   step: Step
@@ -31,27 +32,29 @@ const StepComponent = observer(
 
     const clickOutsideComponent = (event: MouseEvent): void => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
+        console.log('outside')
         disableEditMode()
-        enableButtons()
+        setAddButtonDisable(false)
+        if (onEditEnd) onEditEnd()
       }
     }
-    useEffect(() => {
-      if (addButtonDisable) {
-        document.addEventListener('mousedown', clickOutsideComponent)
-      } else {
-        document.removeEventListener('mousedown', clickOutsideComponent)
-      }
-      return () => {
-        document.removeEventListener('mousedown', clickOutsideComponent)
-      }
-    }, [addButtonDisable])
+    // useEffect(() => {
+    //   if (addButtonDisable) {
+    //     document.addEventListener('mousedown', clickOutsideComponent)
+    //   } else {
+    //     document.removeEventListener('mousedown', clickOutsideComponent)
+    //   }
+    //   return () => {
+    //     document.removeEventListener('mousedown', clickOutsideComponent)
+    //   }
+    // }, [addButtonDisable])
     const addOutsideClickListener = (): void => {
       document.addEventListener('click', clickOutsideComponent)
     }
     const removeOutsideClickListener = (): void => {
       document.removeEventListener('click', clickOutsideComponent)
     }
-    const addNewItem = (text: string): void => {
+    const addItemHandler = (text: string): void => {
       addItem(stepNumber, text)
     }
     const removeItemHandler = (index: number): void => {
@@ -66,35 +69,36 @@ const StepComponent = observer(
     const enableEditMode = (): void => {
       setEditMode(true)
     }
-    const disableButtons = (): void => {
+    const onEditStepStart = (): void => {
       if (onEditStart) {
         onEditStart()
         setAddButtonDisable(true)
-        // addOutsideClickListener()
+        addOutsideClickListener()
       }
     }
 
-    const enableButtons = (): void => {
+    const onEditStepEnd = (): void => {
+      disableEditMode()
       if (onEditEnd) {
         setAddButtonDisable(false)
         onEditEnd()
-        // removeOutsideClickListener()
+        removeOutsideClickListener()
       }
     }
     const itemComponentsList = items.map((item, index) => (
       <TaskComponent
         item={item}
         itemIndex={index}
-        removeItem={removeItemHandler}
+        onDeleteClick={removeItemHandler}
         key={index}
         taskIdentifier={stepNumber}
         readOnly={readOnly}
-        toggleCheck={toggleCheckHandler}
-        editItem={editItemHandler}
-        enableButtons={enableButtons}
-        disableButtons={disableButtons}
-        addListener={addOutsideClickListener}
-        removeListener={removeOutsideClickListener}
+        onToggleCheckClick={toggleCheckHandler}
+        onEditConfirm={editItemHandler}
+        onEditEnd={onEditStepEnd}
+        onEditStart={onEditStepStart}
+        // addListener={addOutsideClickListener}
+        // removeListener={removeOutsideClickListener}
       />
     ))
 
@@ -110,12 +114,12 @@ const StepComponent = observer(
         <div className="bg-amber-200 h-5/6 px-3 py-2">
           <ul>{itemComponentsList}</ul>
           {editMode ? (
-            <ItemInput
-              onConfirm={addNewItem}
-              enableButtons={enableButtons}
-              disableEditeMode={disableEditMode}
-              addListener={addOutsideClickListener}
-              removeListener={removeOutsideClickListener}
+            <TaskComponent
+              itemIndex={itemComponentsList.length}
+              taskIdentifier={stepNumber}
+              onAddConfirm={addItemHandler}
+              onEditEnd={onEditStepEnd}
+              writeMode
             />
           ) : null}
         </div>
@@ -123,9 +127,8 @@ const StepComponent = observer(
           className="size-fit mx-3 my-1 rounded-full text-amber-950 disabled:text-amber-400 disabled:cursor-not-allowed"
           disabled={addButtonDisable}
           onClick={(e) => {
-            e.preventDefault()
             enableEditMode()
-            disableButtons()
+            onEditStepStart()
           }}
         >
           {!readOnly ? <PlusCircleIcon className="size-7 self-center" /> : null}

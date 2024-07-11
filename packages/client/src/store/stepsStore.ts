@@ -169,7 +169,21 @@ class PlansStore {
       isReady: false,
       requiresFulfillment: false,
     }
-    this.draftPlan.steps[stepIdx].items.push(newItem)
+    const items = [...this.draftPlan.steps[stepIdx].items, newItem]
+    const step = { ...this.draftPlan.steps[stepIdx], items }
+    const steps = [
+      ...this.draftPlan.steps.map((s, index): Step => {
+        if (index === stepIdx) {
+          return step
+        }
+        return s
+      }),
+    ]
+    this.draftPlan = {
+      ...this.draftPlan,
+      steps,
+    }
+    // this.draftPlan.steps[stepIdx].items.push(newItem)
     this.saveCurrentPlanToLocalStorage()
   }
 
@@ -232,7 +246,6 @@ class PlansStore {
   }
 
   editAction = (actionsKey: string, actionIndex: number, newText: string): void => {
-    console.log(newText)
     runInAction(() => {
       if (!this.draftPlan) {
         return
@@ -243,14 +256,11 @@ class PlansStore {
         }
         return task
       })
-      console.log(newTasks)
       const actions = { ...this.draftPlan.actions, [actionsKey]: newTasks }
-      console.log(actions)
       this.draftPlan = {
         ...this.draftPlan,
         actions,
       }
-      console.log(this.draftPlan)
       this.saveCurrentPlanToLocalStorage()
     })
   }
