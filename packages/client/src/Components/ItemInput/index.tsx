@@ -4,6 +4,7 @@ import React, { ReactElement, useEffect, useState } from 'react'
 interface Props {
   onEditEnd?: () => void
   onConfirm: (text: string) => void
+  defaultValue?: string
   // addListener: () => void
   // removeListener: () => void
 }
@@ -13,9 +14,10 @@ const ItemInput = ({
   // removeListener,
   onEditEnd, // which buttons?
   onConfirm,
+  defaultValue,
 }: // onEdit, onSave, onDelete, onClickOutside (possibly)
 Props): ReactElement => {
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState(defaultValue ?? '')
   // useEffect(() => {
   //   addListener()
   //   return () => {
@@ -27,11 +29,12 @@ Props): ReactElement => {
       <input
         type="text"
         onChange={(e) => setValue(e.target.value)}
+        defaultValue={defaultValue ?? ''}
         value={value}
         className="outline-0 bg-amber-200 border-b w-8/12 border-black py-1 px"
         autoFocus
         placeholder="Enter your text"
-        // onBlur={disableEditeMode}
+        // onBlur={onEditEnd}
       />
       <span className="flex items-center">
         <button

@@ -83,6 +83,7 @@ const TaskComponent = observer(
           <ItemInput
             onConfirm={onAddConfirm ?? onEditItemConfirm}
             onEditEnd={onEditTaskEnd}
+            defaultValue={item?.text}
             // addListener={addListener}
             // removeListener={removeListener}
           />
