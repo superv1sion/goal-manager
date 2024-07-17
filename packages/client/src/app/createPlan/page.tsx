@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import React, { ReactElement } from 'react'
 
-import { store, StoreContext, useStore } from '@/store/stepsStore'
+import { useStore } from '@/store/stepsStore'
 
 const PlanForm = dynamic(async () => await import('@/Components/PlanForm'), { ssr: false })
 const CreatePlan = observer((): ReactElement => {
@@ -20,9 +20,7 @@ const CreatePlan = observer((): ReactElement => {
   }
   return (
     <>
-      {/* <StoreContext.Provider value={store}> */}
       <PlanForm draftPlan={draftPlan} />
-      {/* </StoreContext.Provider> */}
     </>
   )
 })

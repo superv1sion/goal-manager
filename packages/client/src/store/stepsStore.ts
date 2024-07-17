@@ -49,11 +49,11 @@ const getInitialSteps = (): Step[] => [
     items: [],
   },
 ]
-const getInitialActions = (): Actions => ({
-  stepsNow: [] as Task[],
-  tomorrow: [] as Task[],
-  dayAfter: [] as Task[],
-})
+const getInitialActions = (): Actions[] => [
+  { name: 'stepsNow', tasks: [] },
+  { name: 'tomorrow', tasks: [] },
+  { name: 'dayAfter', tasks: [] },
+]
 // const getInitialPlan = (): Plan => ({
 //   name: '',
 //   duration: null,
@@ -138,10 +138,6 @@ class PlansStore {
     saveToLocalStorage('draftPlan', this.draftPlan)
   }
 
-  setAllPlans = (): void => {
-    this._allPlans = getAllPlansFromLocalStorage()
-  }
-
   addPlan = (draftPlan: DraftPlan): void => {
     const plan: Plan = {
       ...omit(['isConsumed'], draftPlan),
@@ -187,7 +183,7 @@ class PlansStore {
     this.saveCurrentPlanToLocalStorage()
   }
 
-  addAction = (actionKey: string, text: string): void => {
+  addAction = (actionsIdx: number, text: string): void => {
     if (!this.draftPlan) {
       return
     }
@@ -196,10 +192,12 @@ class PlansStore {
       isReady: false,
       requiresFulfillment: false,
     }
-    // this.draftPlan.actions[actionKey].push(newItem)
-    const newTasks = [...this.draftPlan.actions[actionKey], newItem]
-    const actions = { ...this.draftPlan.actions, [actionKey]: newTasks }
-
+    const newTasks = [...this.draftPlan.actions[actionsIdx].tasks, newItem]
+    const actions = [
+      ...this.draftPlan.actions.map((a, index) => {
+        return index === actionsIdx ? { ...a, tasks: newTasks } : a
+      }),
+    ]
     this.draftPlan = {
       ...this.draftPlan,
       actions,
@@ -219,14 +217,18 @@ class PlansStore {
     this.saveCurrentPlanToLocalStorage()
   }
 
-  removeAction = (actionKey: string, actionIdx: number): void => {
+  removeAction = (actionsIdx: number, taskIdx: number): void => {
     if (!this.draftPlan) {
       return
     }
-    const filteredTasks = this.draftPlan.actions[actionKey].filter(
-      (item, index) => index !== actionIdx
+    const filteredTasks = this.draftPlan.actions[actionsIdx].tasks.filter(
+      (item, index) => index !== taskIdx
     )
-    const actions = { ...this.draftPlan.actions, [actionKey]: filteredTasks }
+    const actions = [
+      ...this.draftPlan.actions.map((a, index) => {
+        return index === actionsIdx ? { ...a, tasks: filteredTasks } : a
+      }),
+    ]
 
     this.draftPlan = { ...this.draftPlan, actions }
     this.saveCurrentPlanToLocalStorage()
@@ -245,18 +247,22 @@ class PlansStore {
     })
   }
 
-  editAction = (actionsKey: string, actionIndex: number, newText: string): void => {
+  editAction = (actionsIdx: number, taskIndex: number, newText: string): void => {
     runInAction(() => {
       if (!this.draftPlan) {
         return
       }
-      const newTasks = this.draftPlan.actions[actionsKey].map((task, index): Task => {
-        if (index === actionIndex) {
+      const newTasks = this.draftPlan.actions[actionsIdx].tasks.map((task, index): Task => {
+        if (index === taskIndex) {
           return { ...task, text: newText }
         }
         return task
       })
-      const actions = { ...this.draftPlan.actions, [actionsKey]: newTasks }
+      const actions = [
+        ...this.draftPlan.actions.map((a, index) => {
+          return index === actionsIdx ? { ...a, tasks: newTasks } : a
+        }),
+      ]
       this.draftPlan = {
         ...this.draftPlan,
         actions,
@@ -274,17 +280,21 @@ class PlansStore {
     this.saveCurrentPlanToLocalStorage()
   }
 
-  toggleActionCheck = (actionsKey: string, actionIndex: number): void => {
+  toggleActionCheck = (actionsIdx: number, taskIndex: number): void => {
     if (!this.draftPlan) {
       return
     }
-    const newTasks = this.draftPlan.actions[actionsKey].map((task, index): Task => {
-      if (index === actionIndex) {
+    const newTasks = this.draftPlan.actions[actionsIdx].tasks.map((task, index): Task => {
+      if (index === taskIndex) {
         return { ...task, isReady: !task.isReady }
       }
       return task
     })
-    const actions = { ...this.draftPlan.actions, [actionsKey]: newTasks }
+    const actions = [
+      ...this.draftPlan.actions.map((a, index) => {
+        return index === actionsIdx ? { ...a, tasks: newTasks } : a
+      }),
+    ]
     this.draftPlan = { ...this.draftPlan, actions }
     this.saveCurrentPlanToLocalStorage()
   }

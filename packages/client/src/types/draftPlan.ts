@@ -6,6 +6,6 @@ export interface DraftPlan {
   planId?: string
   duration: number | null
   steps: Step[]
-  actions: Actions
+  actions: Actions[]
   isConsumed?: boolean
 }

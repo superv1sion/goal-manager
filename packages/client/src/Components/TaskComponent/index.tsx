@@ -1,6 +1,6 @@
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { observer } from 'mobx-react-lite'
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useEffect, useRef, useState } from 'react'
 
 import ItemInput from '@/Components/ItemInput'
 import { Task } from '@/types/task'
@@ -17,10 +17,8 @@ interface StepItemComponentProps {
   onDeleteClick?: (index: number) => void
   onToggleCheckClick?: (itemIndex: number) => void
   onEditConfirm?: (itemIndex: number, text: string) => void
-  onEditEnd?: () => void
-  onEditStart?: () => void
-  // addListener: () => void
-  // removeListener: () => void
+  onEditEnd?: (index: number) => void
+  onEditStart?: (index: number) => void
 }
 
 const TaskComponent = observer(
@@ -35,22 +33,10 @@ const TaskComponent = observer(
     onEditEnd, // which buttons?
     onEditStart, // which buttons?
     onAddConfirm,
-  }: // addListener,
-  // removeListener,
-  // onChange, onEditStart, onAddItem, onSaveItem etc
+  }: // onChange, onEditStart, onAddItem, onSaveItem etc
   StepItemComponentProps): ReactElement => {
     const [isHovered, setIsHovered] = useState(false)
     const [editMode, setEditMode] = useState(writeMode ?? false)
-    // useEffect(() => {
-    //   if (editMode) {
-    //     addListener()
-    //   } else {
-    //     removeListener()
-    //   }
-    //   return () => {
-    //     removeListener()
-    //   }
-    // }, [addListener, editMode, removeListener])
 
     const handleCheckboxClick = (): void => {
       if (onToggleCheckClick) {
@@ -65,12 +51,30 @@ const TaskComponent = observer(
 
     const onEditTaskStart = (): void => {
       setEditMode(true)
-      if (onEditStart) onEditStart()
+      if (onEditStart) onEditStart(itemIndex)
     }
     const onEditTaskEnd = (): void => {
       setEditMode(false)
-      if (onEditEnd) onEditEnd()
+      if (onEditEnd) onEditEnd(itemIndex)
     }
+    const ref = useRef<HTMLLIElement>(null)
+
+    const clickOutsideComponent = (event: MouseEvent): void => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setEditMode(false)
+        onEditTaskEnd()
+      }
+    }
+    useEffect(() => {
+      if (editMode) {
+        document.addEventListener('mousedown', clickOutsideComponent)
+      } else {
+        document.removeEventListener('mousedown', clickOutsideComponent)
+      }
+      return () => {
+        document.removeEventListener('mousedown', clickOutsideComponent)
+      }
+    }, [editMode, onEditEnd, itemIndex])
 
     return (
       <li
@@ -78,14 +82,13 @@ const TaskComponent = observer(
         key={itemIndex}
         onMouseOver={() => setIsHovered(true)}
         onMouseOut={() => setIsHovered(false)}
+        ref={ref}
       >
         {editMode ? (
           <ItemInput
             onConfirm={onAddConfirm ?? onEditItemConfirm}
             onEditEnd={onEditTaskEnd}
             defaultValue={item?.text}
-            // addListener={addListener}
-            // removeListener={removeListener}
           />
         ) : (
           <>

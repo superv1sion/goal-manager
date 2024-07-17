@@ -4,16 +4,15 @@ import { observer } from 'mobx-react-lite'
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import TaskComponent from 'src/Components/TaskComponent'
 
-import ItemInput from '@/Components/ItemInput'
 import { useStore } from '@/store/stepsStore'
 import { Step } from '@/types/step'
-import { Task } from '@/types/task'
+import { useProcessingState } from '@/utils/useProcessingState'
 
 interface StepProps {
   step: Step
   stepNumber: number
-  onEditStart?: () => void
-  onEditEnd?: () => void
+  onEditStart?: (index: number) => void
+  onEditEnd?: (index: number) => void
   readOnly?: boolean
 }
 
@@ -23,37 +22,27 @@ const StepComponent = observer(
     const { addItem, removeItem, toggleCheck, editItem } = useStore()
     const [editMode, setEditMode] = useState(false)
     const [addButtonDisable, setAddButtonDisable] = useState(false)
-    // const [itemsList, setItemsList] = useState(items)
+    const [anyTasksProcessing, setAnyTasksProcessing] = useProcessingState({})
+
+    useEffect(() => {
+      if (anyTasksProcessing) {
+        setAddButtonDisable(true)
+        if (onEditStart) {
+          onEditStart(stepNumber)
+        }
+        return
+      }
+      setAddButtonDisable(false)
+      if (onEditEnd) {
+        onEditEnd(stepNumber)
+      }
+    }, [anyTasksProcessing])
     const ref = useRef<HTMLDivElement>(null)
 
     const disableEditMode = (): void => {
       setEditMode(false)
     }
 
-    const clickOutsideComponent = (event: MouseEvent): void => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        console.log('outside')
-        disableEditMode()
-        setAddButtonDisable(false)
-        if (onEditEnd) onEditEnd()
-      }
-    }
-    // useEffect(() => {
-    //   if (addButtonDisable) {
-    //     document.addEventListener('mousedown', clickOutsideComponent)
-    //   } else {
-    //     document.removeEventListener('mousedown', clickOutsideComponent)
-    //   }
-    //   return () => {
-    //     document.removeEventListener('mousedown', clickOutsideComponent)
-    //   }
-    // }, [addButtonDisable])
-    const addOutsideClickListener = (): void => {
-      document.addEventListener('click', clickOutsideComponent)
-    }
-    const removeOutsideClickListener = (): void => {
-      document.removeEventListener('click', clickOutsideComponent)
-    }
     const addItemHandler = (text: string): void => {
       addItem(stepNumber, text)
     }
@@ -69,21 +58,13 @@ const StepComponent = observer(
     const enableEditMode = (): void => {
       setEditMode(true)
     }
-    const onEditStepStart = (): void => {
-      if (onEditStart) {
-        onEditStart()
-        setAddButtonDisable(true)
-        addOutsideClickListener()
-      }
+    const onEditStepStart = (index: number): void => {
+      setAnyTasksProcessing(index, true)
     }
 
-    const onEditStepEnd = (): void => {
+    const onEditStepEnd = (index: number): void => {
       disableEditMode()
-      if (onEditEnd) {
-        setAddButtonDisable(false)
-        onEditEnd()
-        removeOutsideClickListener()
-      }
+      setAnyTasksProcessing(index, false)
     }
     const itemComponentsList = items.map((item, index) => (
       <TaskComponent
@@ -97,8 +78,6 @@ const StepComponent = observer(
         onEditConfirm={editItemHandler}
         onEditEnd={onEditStepEnd}
         onEditStart={onEditStepStart}
-        // addListener={addOutsideClickListener}
-        // removeListener={removeOutsideClickListener}
       />
     ))
 
@@ -128,7 +107,7 @@ const StepComponent = observer(
           disabled={addButtonDisable}
           onClick={(e) => {
             enableEditMode()
-            onEditStepStart()
+            onEditStepStart(items.length)
           }}
         >
           {!readOnly ? <PlusCircleIcon className="size-7 self-center" /> : null}

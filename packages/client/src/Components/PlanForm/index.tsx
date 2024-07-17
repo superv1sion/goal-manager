@@ -1,13 +1,14 @@
 'use client'
 import { observer } from 'mobx-react-lite'
 import { useRouter } from 'next/navigation'
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { useFormState } from 'react-dom'
 
 import ActionsSection from '@/Components/ActionsSectionComponent'
 import StepComponent from '@/Components/StepComponent'
 import { useStore } from '@/store/stepsStore'
 import { DraftPlan } from '@/types/draftPlan'
+import { useProcessingState } from '@/utils/useProcessingState'
 
 import { addPlanAction } from './action'
 
@@ -16,15 +17,28 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
   const router = useRouter()
   const [buttonDisabled, setButtonDisabled] = useState(false)
   const [formState, submitForm] = useFormState(addPlanAction(addPlan, draftPlan), null)
+  const [anyStepsProcessing, setAnyStepsProcessing] = useProcessingState({})
+  const [anyActionsProcessing, setAnyActionsProcessing] = useProcessingState({})
+
+  useEffect(() => {
+    setButtonDisabled(anyStepsProcessing || anyActionsProcessing)
+  }, [anyStepsProcessing, anyActionsProcessing])
+
   if (formState?.success) {
     consumeDraftPlan()
     return <></>
   }
-  const onEditPlanStart = (): void => {
-    setButtonDisabled(true)
+  const onEditStepsStart = (index: number): void => {
+    setAnyStepsProcessing(index, true)
   }
-  const onEditPlanEnd = (): void => {
-    setButtonDisabled(false)
+  const onEditStepsEnd = (index: number): void => {
+    setAnyStepsProcessing(index, false)
+  }
+  const onEditActionsStart = (index: number): void => {
+    setAnyActionsProcessing(index, true)
+  }
+  const onEditActionsEnd = (index: number): void => {
+    setAnyActionsProcessing(index, false)
   }
   return (
     <div className="px-8 py-6">
@@ -48,8 +62,8 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
                     <StepComponent
                       stepNumber={index}
                       step={step}
-                      onEditStart={onEditPlanStart}
-                      onEditEnd={onEditPlanEnd}
+                      onEditStart={onEditStepsStart}
+                      onEditEnd={onEditStepsEnd}
                     />
                   </div>
                 )
@@ -58,8 +72,8 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
                 <StepComponent
                   key={index}
                   stepNumber={index}
-                  onEditStart={onEditPlanStart}
-                  onEditEnd={onEditPlanEnd}
+                  onEditStart={onEditStepsStart}
+                  onEditEnd={onEditStepsEnd}
                   step={step}
                 />
               )
@@ -75,11 +89,11 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
             Create Plan
           </button>
         </div>
-        {/* <ActionsSection */}
-        {/*  actions={draftPlan.actions} */}
-        {/*  onEditEnd={onEditEnd} */}
-        {/*  onEditStart={onEditStart} */}
-        {/* /> */}
+        <ActionsSection
+          actions={draftPlan.actions}
+          onEditEnd={onEditActionsEnd}
+          onEditStart={onEditActionsStart}
+        />
       </form>
     </div>
   )

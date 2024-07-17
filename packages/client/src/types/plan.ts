@@ -7,5 +7,5 @@ export interface Plan {
   duration: number | null
   creationDate: Date | null
   steps: Step[]
-  actions: Actions
+  actions: Actions[]
 }
