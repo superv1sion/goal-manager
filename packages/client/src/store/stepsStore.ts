@@ -85,8 +85,26 @@ class PlansStore {
 
   public _draftPlan: DraftPlan | null = null
 
+  public _plan: Plan | null = null
+
   constructor() {
     makeAutoObservable(this)
+  }
+
+  set plan(planObj: Plan) {
+    this._plan = planObj
+    if (this._plan) {
+      saveToLocalStorage<Plan>('plan', this._plan)
+    } else {
+      deleteFromLocalStorage('plan')
+    }
+  }
+
+  get plan(): Plan | null {
+    if (this._plan) {
+      return this._plan
+    }
+    return getFromLocalStorage<Plan>('plan')
   }
 
   set draftPlan(planObj: DraftPlan | null) {

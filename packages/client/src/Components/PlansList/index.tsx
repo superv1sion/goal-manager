@@ -7,7 +7,7 @@ import { useStore } from '@/store/stepsStore'
 
 const PlansList = observer((): React.JSX.Element => {
   const { allPlans, deletePlan } = useStore()
-  const onDeletePlanClick = (planId: string) => {
+  const onDeletePlanClick = (planId: string): void => {
     deletePlan(planId)
   }
   return (

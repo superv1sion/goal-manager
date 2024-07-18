@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import React from 'react'
 
 import ActionsSection from '@/Components/ActionsSectionComponent'
-import StepComponent from '@/Components/StepComponent'
+import StepsSection from '@/Components/StepsSectionComponent'
 import { Plan } from '@/types/plan'
 
 const PlanComponent = observer(({ plan }: { plan: Plan }): React.JSX.Element => {
@@ -18,7 +18,7 @@ const PlanComponent = observer(({ plan }: { plan: Plan }): React.JSX.Element => 
         <button
           className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
            hover:bg-sky-700 disabled:bg-slate-400 disabled:cursor-not-allowed`}
-          onClick={() => router.push('/editPlan')}
+          onClick={() => router.push(`/editPlan/${plan.planId}`)}
         >
           Edit Plan
         </button>
@@ -31,18 +31,7 @@ const PlanComponent = observer(({ plan }: { plan: Plan }): React.JSX.Element => 
           All Plans
         </button>
 
-        <div className="grid grid-rows-3 grid-flow-col size-fit gap-1">
-          {plan.steps.map((step, index, arr) => {
-            if (index === arr.length - 1) {
-              return (
-                <div className="row-start-2" key={index}>
-                  <StepComponent stepNumber={index} step={step} readOnly />
-                </div>
-              )
-            }
-            return <StepComponent key={index} stepNumber={index} step={step} readOnly />
-          })}
-        </div>
+        <StepsSection plan={plan} />
       </div>
       <ActionsSection actions={plan.actions} readonly />
     </div>

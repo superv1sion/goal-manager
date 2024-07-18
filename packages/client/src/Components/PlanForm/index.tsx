@@ -6,6 +6,7 @@ import { useFormState } from 'react-dom'
 
 import ActionsSection from '@/Components/ActionsSectionComponent'
 import StepComponent from '@/Components/StepComponent'
+import StepsSection from '@/Components/StepsSectionComponent'
 import { useStore } from '@/store/stepsStore'
 import { DraftPlan } from '@/types/draftPlan'
 import { useProcessingState } from '@/utils/useProcessingState'
@@ -54,46 +55,26 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
           >
             Back
           </button>
-          <div className="grid grid-rows-3 grid-flow-col size-fit gap-1">
-            {draftPlan.steps.map((step, index, arr) => {
-              if (index === arr.length - 1) {
-                return (
-                  <div className="row-start-2" key={index}>
-                    <StepComponent
-                      stepNumber={index}
-                      step={step}
-                      onEditStart={onEditStepsStart}
-                      onEditEnd={onEditStepsEnd}
-                    />
-                  </div>
-                )
-              }
-              return (
-                <StepComponent
-                  key={index}
-                  stepNumber={index}
-                  onEditStart={onEditStepsStart}
-                  onEditEnd={onEditStepsEnd}
-                  step={step}
-                />
-              )
-            })}
-          </div>
 
-          <button
-            disabled={buttonDisabled}
-            type="submit"
-            className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
-           hover:bg-sky-700 disabled:bg-slate-400 disabled:cursor-not-allowed`}
-          >
-            Create Plan
-          </button>
+          <StepsSection
+            plan={draftPlan}
+            onEditStepsStart={onEditStepsStart}
+            onEditStepsEnd={onEditStepsEnd}
+          />
         </div>
         <ActionsSection
           actions={draftPlan.actions}
           onEditEnd={onEditActionsEnd}
           onEditStart={onEditActionsStart}
         />
+        <button
+          disabled={buttonDisabled}
+          type="submit"
+          className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
+           hover:bg-sky-700 disabled:bg-slate-400 disabled:cursor-not-allowed`}
+        >
+          Create Plan
+        </button>
       </form>
     </div>
   )
