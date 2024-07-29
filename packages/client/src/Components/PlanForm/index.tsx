@@ -26,33 +26,15 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
     editAction,
   } = useStore()
   const router = useRouter()
-  // const [buttonDisabled, setButtonDisabled] = useState(false)
   const [formState, submitForm] = useFormState(addPlanAction(addPlan, draftPlan), null)
   const { buttonDisabled, onEditStepsStart, onEditStepsEnd, onEditActionsStart, onEditActionsEnd } =
     useProccessingStatusHandler()
-  // const [anyStepsProcessing, setAnyStepsProcessing] = useProcessingState({})
-  // const [anyActionsProcessing, setAnyActionsProcessing] = useProcessingState({})
-  //
-  // useEffect(() => {
-  //   setButtonDisabled(anyStepsProcessing || anyActionsProcessing)
-  // }, [anyStepsProcessing, anyActionsProcessing])
 
   if (formState?.success) {
     consumeDraftPlan()
     return <></>
   }
-  // const onEditStepsStart = (index: number): void => {
-  //   setAnyStepsProcessing(index, true)
-  // }
-  // const onEditStepsEnd = (index: number): void => {
-  //   setAnyStepsProcessing(index, false)
-  // }
-  // const onEditActionsStart = (index: number): void => {
-  //   setAnyActionsProcessing(index, true)
-  // }
-  // const onEditActionsEnd = (index: number): void => {
-  //   setAnyActionsProcessing(index, false)
-  // }
+
   return (
     <div className="px-4 py-6 max-w-screen">
       <form action={submitForm} className="flex flex-col">

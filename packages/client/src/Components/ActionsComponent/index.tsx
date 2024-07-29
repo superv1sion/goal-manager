@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 
 import TaskComponent from '@/Components/TaskComponent'
 import { useProcessingState } from '@/hooks/useProcessingState'
-import { useStore } from '@/store/stepsStore'
 import { Actions } from '@/types/actions'
 
 interface Props {
@@ -49,18 +48,6 @@ const ActionsComponent = observer(
       }
     }, [anyTasksProcessing])
 
-    // const addActionHandler = (text: string): void => {
-    //   addAction(actionsIdx, text)
-    // }
-    // const removeActionHandler = (index: number): void => {
-    //   removeAction(actionsIdx, index)
-    // }
-    // const toggleCheckHandler = (index: number): void => {
-    //   toggleActionCheck(actionsIdx, index)
-    // }
-    // const editActionHandler = (index: number, text: string): void => {
-    //   editAction(actionsIdx, index, text)
-    // }
     const enableEditMode = (): void => {
       setEditMode(true)
     }

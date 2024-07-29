@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react-lite'
+import { useRouter } from 'next/navigation'
 import * as R from 'ramda'
 import * as React from 'react'
 import { useState } from 'react'
@@ -12,17 +13,22 @@ import { useProccessingStatusHandler } from '@/hooks/useProcessingStatusHandler'
 import { useStore } from '@/store/stepsStore'
 import { Plan } from '@/types/plan'
 import { Task } from '@/types/task'
-
 interface Props {
   plan: Plan
 }
 
 export const EditPlanComponent = observer(({ plan }: Props): React.JSX.Element => {
   const { updatePlan } = useStore()
+  const router = useRouter()
   const [state, setState] = useState<Plan>(plan)
   const [formState, submitForm] = useFormState(updatePlanAction(updatePlan, state), null)
   const { buttonDisabled, onEditStepsStart, onEditStepsEnd, onEditActionsStart, onEditActionsEnd } =
     useProccessingStatusHandler()
+
+  if (formState?.success) {
+    router.push('/plans')
+    return <></>
+  }
   // const [buttonDisabled, setButtonDisabled] = useState(false)
   // const [anyStepsProcessing, setAnyStepsProcessing] = useProcessingState({})
   // const [anyActionsProcessing, setAnyActionsProcessing] = useProcessingState({})
@@ -103,7 +109,7 @@ export const EditPlanComponent = observer(({ plan }: Props): React.JSX.Element =
     updateState(['actions', actionIdx, 'tasks'], 'edit', itemIdx, text)
   }
   return (
-    <div className="px-4 py-6 w-screen">
+    <div className="px-5 py-2 w-screen">
       <form action={submitForm} className="flex flex-col">
         <EditPlanHeader
           defaultName={state.name}
