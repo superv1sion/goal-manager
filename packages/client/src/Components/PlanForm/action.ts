@@ -1,4 +1,4 @@
-'use client'
+// 'use client'
 
 import { DraftPlan } from '@/types/draftPlan'
 export const addPlanAction =

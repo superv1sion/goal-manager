@@ -8,13 +8,21 @@ interface Props {
   plan: DraftPlan | Plan
   onEditStepsStart?: (index: number) => void
   onEditStepsEnd?: (index: number) => void
-  readonly?: boolean
+  readOnly?: boolean
+  addItemHandler?: (stepNumber: number, text: string) => void
+  removeItemHandler?: (stepNumber: number, index: number) => void
+  toggleCheckHandler?: (stepNumber: number, index: number) => void
+  editItemHandler?: (stepNumber: number, index: number, text: string) => void
 }
 const StepsSection = ({
   plan,
   onEditStepsStart,
   onEditStepsEnd,
-  readonly,
+  readOnly,
+  addItemHandler,
+  removeItemHandler,
+  toggleCheckHandler,
+  editItemHandler,
 }: Props): React.JSX.Element => {
   return (
     <div className="grid grid-rows-3 grid-flow-col size-fit gap-1">
@@ -23,23 +31,31 @@ const StepsSection = ({
           return (
             <div className="row-start-2" key={index}>
               <StepComponent
+                addItemHandler={addItemHandler}
+                removeItemHandler={removeItemHandler}
+                toggleCheckHandler={toggleCheckHandler}
+                editItemHandler={editItemHandler}
                 stepNumber={index}
                 step={step}
                 onEditStart={onEditStepsStart}
                 onEditEnd={onEditStepsEnd}
-                readOnly
+                readOnly={readOnly}
               />
             </div>
           )
         }
         return (
           <StepComponent
+            addItemHandler={addItemHandler}
+            removeItemHandler={removeItemHandler}
+            toggleCheckHandler={toggleCheckHandler}
+            editItemHandler={editItemHandler}
             key={index}
             stepNumber={index}
             onEditStart={onEditStepsStart}
             onEditEnd={onEditStepsEnd}
             step={step}
-            readOnly
+            readOnly={readOnly}
           />
         )
       })}

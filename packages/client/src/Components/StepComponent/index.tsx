@@ -4,9 +4,8 @@ import { observer } from 'mobx-react-lite'
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import TaskComponent from 'src/Components/TaskComponent'
 
-import { useStore } from '@/store/stepsStore'
+import { useProcessingState } from '@/hooks/useProcessingState'
 import { Step } from '@/types/step'
-import { useProcessingState } from '@/utils/useProcessingState'
 
 interface StepProps {
   step: Step
@@ -14,12 +13,25 @@ interface StepProps {
   onEditStart?: (index: number) => void
   onEditEnd?: (index: number) => void
   readOnly?: boolean
+  addItemHandler?: (stepNumber: number, text: string) => void
+  removeItemHandler?: (stepNumber: number, index: number) => void
+  toggleCheckHandler?: (stepNumber: number, index: number) => void
+  editItemHandler?: (stepNumber: number, index: number, text: string) => void
 }
 
 const StepComponent = observer(
-  ({ step, onEditStart, onEditEnd, stepNumber, readOnly }: StepProps): ReactElement => {
+  ({
+    step,
+    onEditStart,
+    onEditEnd,
+    stepNumber,
+    readOnly,
+    addItemHandler,
+    removeItemHandler,
+    toggleCheckHandler,
+    editItemHandler,
+  }: StepProps): ReactElement => {
     const { items, number, title } = step
-    const { addItem, removeItem, toggleCheck, editItem } = useStore()
     const [editMode, setEditMode] = useState(false)
     const [addButtonDisable, setAddButtonDisable] = useState(false)
     const [anyTasksProcessing, setAnyTasksProcessing] = useProcessingState({})
@@ -43,18 +55,6 @@ const StepComponent = observer(
       setEditMode(false)
     }
 
-    const addItemHandler = (text: string): void => {
-      addItem(stepNumber, text)
-    }
-    const removeItemHandler = (index: number): void => {
-      removeItem(stepNumber, index)
-    }
-    const toggleCheckHandler = (index: number): void => {
-      toggleCheck(stepNumber, index)
-    }
-    const editItemHandler = (index: number, text: string): void => {
-      editItem(stepNumber, index, text)
-    }
     const enableEditMode = (): void => {
       setEditMode(true)
     }
@@ -70,12 +70,16 @@ const StepComponent = observer(
       <TaskComponent
         item={item}
         itemIndex={index}
-        onDeleteClick={removeItemHandler}
+        onDeleteClick={(index: number) => removeItemHandler && removeItemHandler(stepNumber, index)}
         key={index}
         taskIdentifier={stepNumber}
         readOnly={readOnly}
-        onToggleCheckClick={toggleCheckHandler}
-        onEditConfirm={editItemHandler}
+        onToggleCheckClick={(index: number) =>
+          toggleCheckHandler && toggleCheckHandler(stepNumber, index)
+        }
+        onEditConfirm={(index: number, text: string) =>
+          editItemHandler && editItemHandler(stepNumber, index, text)
+        }
         onEditEnd={onEditStepEnd}
         onEditStart={onEditStepStart}
       />
@@ -90,13 +94,13 @@ const StepComponent = observer(
           </span>
           : {title}
         </h4>
-        <div className="bg-amber-200 h-5/6 px-3 py-2">
+        <div className="bg-amber-200 h-5/6 px-1 py-2">
           <ul>{itemComponentsList}</ul>
           {editMode ? (
             <TaskComponent
               itemIndex={itemComponentsList.length}
               taskIdentifier={stepNumber}
-              onAddConfirm={addItemHandler}
+              onAddConfirm={(text) => addItemHandler && addItemHandler(stepNumber, text)}
               onEditEnd={onEditStepEnd}
               writeMode
             />

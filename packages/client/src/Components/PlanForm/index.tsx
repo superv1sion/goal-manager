@@ -1,72 +1,92 @@
 'use client'
 import { observer } from 'mobx-react-lite'
 import { useRouter } from 'next/navigation'
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement } from 'react'
 import { useFormState } from 'react-dom'
 
 import ActionsSection from '@/Components/ActionsSectionComponent'
-import StepComponent from '@/Components/StepComponent'
 import StepsSection from '@/Components/StepsSectionComponent'
+import { useProccessingStatusHandler } from '@/hooks/useProcessingStatusHandler'
 import { useStore } from '@/store/stepsStore'
 import { DraftPlan } from '@/types/draftPlan'
-import { useProcessingState } from '@/utils/useProcessingState'
 
 import { addPlanAction } from './action'
 
 const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElement => {
-  const { addPlan, consumeDraftPlan } = useStore()
+  const {
+    addPlan,
+    consumeDraftPlan,
+    addItem,
+    removeItem,
+    toggleCheck,
+    editItem,
+    addAction,
+    removeAction,
+    toggleActionCheck,
+    editAction,
+  } = useStore()
   const router = useRouter()
-  const [buttonDisabled, setButtonDisabled] = useState(false)
+  // const [buttonDisabled, setButtonDisabled] = useState(false)
   const [formState, submitForm] = useFormState(addPlanAction(addPlan, draftPlan), null)
-  const [anyStepsProcessing, setAnyStepsProcessing] = useProcessingState({})
-  const [anyActionsProcessing, setAnyActionsProcessing] = useProcessingState({})
-
-  useEffect(() => {
-    setButtonDisabled(anyStepsProcessing || anyActionsProcessing)
-  }, [anyStepsProcessing, anyActionsProcessing])
+  const { buttonDisabled, onEditStepsStart, onEditStepsEnd, onEditActionsStart, onEditActionsEnd } =
+    useProccessingStatusHandler()
+  // const [anyStepsProcessing, setAnyStepsProcessing] = useProcessingState({})
+  // const [anyActionsProcessing, setAnyActionsProcessing] = useProcessingState({})
+  //
+  // useEffect(() => {
+  //   setButtonDisabled(anyStepsProcessing || anyActionsProcessing)
+  // }, [anyStepsProcessing, anyActionsProcessing])
 
   if (formState?.success) {
     consumeDraftPlan()
     return <></>
   }
-  const onEditStepsStart = (index: number): void => {
-    setAnyStepsProcessing(index, true)
-  }
-  const onEditStepsEnd = (index: number): void => {
-    setAnyStepsProcessing(index, false)
-  }
-  const onEditActionsStart = (index: number): void => {
-    setAnyActionsProcessing(index, true)
-  }
-  const onEditActionsEnd = (index: number): void => {
-    setAnyActionsProcessing(index, false)
-  }
+  // const onEditStepsStart = (index: number): void => {
+  //   setAnyStepsProcessing(index, true)
+  // }
+  // const onEditStepsEnd = (index: number): void => {
+  //   setAnyStepsProcessing(index, false)
+  // }
+  // const onEditActionsStart = (index: number): void => {
+  //   setAnyActionsProcessing(index, true)
+  // }
+  // const onEditActionsEnd = (index: number): void => {
+  //   setAnyActionsProcessing(index, false)
+  // }
   return (
-    <div className="px-8 py-6">
-      <form action={submitForm} className="flex">
-        <div className="flex flex-col mb-8 mr-5">
-          <h3>Plan Name: {draftPlan.name}</h3>
-          <h3>Plan Duration: {draftPlan?.duration}</h3>
-          <button
-            type="button"
-            onClick={() => router.push('/initiatePlan')}
-            className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
+    <div className="px-4 py-6 max-w-screen">
+      <form action={submitForm} className="flex flex-col">
+        <h3>Plan Name: {draftPlan.name}</h3>
+        <h3>Plan Duration: {draftPlan?.duration}</h3>
+        <button
+          type="button"
+          onClick={() => router.push('/initiatePlan')}
+          className={`bg-slate-700 mb-8 text-amber-200 w-48 self-center rounded-lg h-12
            hover:bg-sky-700 disabled:bg-slate-400 disabled:cursor-not-allowed`}
-          >
-            Back
-          </button>
-
+        >
+          Back
+        </button>
+        <div className="flex justify-between mb-8">
           <StepsSection
+            addItemHandler={addItem}
+            removeItemHandler={removeItem}
+            toggleCheckHandler={toggleCheck}
+            editItemHandler={editItem}
             plan={draftPlan}
             onEditStepsStart={onEditStepsStart}
             onEditStepsEnd={onEditStepsEnd}
           />
+          <ActionsSection
+            actions={draftPlan.actions}
+            addActionHandler={addAction}
+            removeActionHandler={removeAction}
+            toggleCheckHandler={toggleActionCheck}
+            editActionHandler={editAction}
+            onEditEnd={onEditActionsEnd}
+            onEditStart={onEditActionsStart}
+          />
         </div>
-        <ActionsSection
-          actions={draftPlan.actions}
-          onEditEnd={onEditActionsEnd}
-          onEditStart={onEditActionsStart}
-        />
+
         <button
           disabled={buttonDisabled}
           type="submit"

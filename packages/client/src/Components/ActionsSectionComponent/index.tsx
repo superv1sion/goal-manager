@@ -7,13 +7,21 @@ interface Props {
   actions: Actions[]
   onEditStart?: (index: number) => void
   onEditEnd?: (index: number) => void
-  readonly?: boolean
+  readOnly?: boolean
+  addActionHandler?: (actionsIdx: number, text: string) => void
+  removeActionHandler?: (actionsIdx: number, itemIdx: number) => void
+  toggleCheckHandler?: (actionsIdx: number, text: number) => void
+  editActionHandler?: (actionsIdx: number, index: number, text: string) => void
 }
 const ActionsSection = ({
   actions,
   onEditStart,
   onEditEnd,
-  readonly,
+  readOnly,
+  addActionHandler,
+  removeActionHandler,
+  toggleCheckHandler,
+  editActionHandler,
 }: Props): React.JSX.Element => {
   return (
     <div className="self-center">
@@ -25,7 +33,11 @@ const ActionsSection = ({
             key={a.name}
             onEditStart={onEditStart}
             onEditEnd={onEditEnd}
-            readOnly
+            readOnly={readOnly}
+            addActionHandler={addActionHandler}
+            removeActionHandler={removeActionHandler}
+            toggleCheckHandler={toggleCheckHandler}
+            editActionHandler={editActionHandler}
           />
         )
       })}

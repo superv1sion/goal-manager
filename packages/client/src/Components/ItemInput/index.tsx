@@ -1,8 +1,11 @@
 import { CheckIcon, TrashIcon } from '@heroicons/react/24/outline'
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useState } from 'react'
+
+import styles from './ItemInput.module.css'
 
 interface Props {
   onEditEnd?: () => void
+  index: number
   onConfirm: (text: string) => void
   defaultValue?: string
   // addListener: () => void
@@ -10,28 +13,27 @@ interface Props {
 }
 // ItemComponent, not ItemInput
 const ItemInput = ({
-  // addListener,
-  // removeListener,
-  onEditEnd, // which buttons?
+  index,
+  onEditEnd,
   onConfirm,
   defaultValue,
 }: // onEdit, onSave, onDelete, onClickOutside (possibly)
 Props): ReactElement => {
   const [value, setValue] = useState(defaultValue ?? '')
-  // useEffect(() => {
-  //   addListener()
-  //   return () => {
-  //     removeListener()
-  //   }
-  // }, [addListener, removeListener])
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    event.target.select()
+  }
   return (
-    <span className="flex justify-between">
+    <span className="flex justify-between px-5">
+      <div className="self-center">{index + 1 + '. '}</div>
+
       <input
         type="text"
         onChange={(e) => setValue(e.target.value)}
-        defaultValue={defaultValue ?? ''}
+        // defaultValue={defaultValue ?? ''}
         value={value}
-        className="outline-0 bg-amber-200 border-b w-8/12 border-black py-1 px"
+        className={`outline-0 bg-amber-200 border-b w-8/12 border-black py-1 px ${styles.selection}`}
+        onFocus={handleFocus}
         autoFocus
         placeholder="Enter your text"
         // onBlur={onEditEnd}

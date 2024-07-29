@@ -86,22 +86,30 @@ const TaskComponent = observer(
       >
         {editMode ? (
           <ItemInput
+            index={itemIndex}
             onConfirm={onAddConfirm ?? onEditItemConfirm}
             onEditEnd={onEditTaskEnd}
             defaultValue={item?.text}
           />
         ) : (
           <>
-            {itemIndex + 1 + '. '}
-            {item?.text}
-            {!readOnly ? (
-              <span className="flex items-center">
+            <div className="flex items-center">
+              <div className="w-5 mr-1">
                 <IconCheckbox
                   isChecked={item?.isReady ?? false}
                   hovered={isHovered}
+                  readOnly={readOnly ?? true}
                   onClick={handleCheckboxClick}
                 />
+              </div>
+              <div>
+                {itemIndex + 1 + '. '}
+                {item?.text}
+              </div>
+            </div>
 
+            {!readOnly ? (
+              <span className="flex items-center">
                 <button
                   className={`mr-1 size-5 ${isHovered ? '' : 'hidden'}`}
                   onClick={onEditTaskStart}

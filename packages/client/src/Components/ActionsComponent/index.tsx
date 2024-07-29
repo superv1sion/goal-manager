@@ -4,9 +4,9 @@ import * as React from 'react'
 import { useEffect, useState } from 'react'
 
 import TaskComponent from '@/Components/TaskComponent'
+import { useProcessingState } from '@/hooks/useProcessingState'
 import { useStore } from '@/store/stepsStore'
 import { Actions } from '@/types/actions'
-import { useProcessingState } from '@/utils/useProcessingState'
 
 interface Props {
   actions: Actions
@@ -14,12 +14,25 @@ interface Props {
   onEditStart?: (index: number) => void
   onEditEnd?: (index: number) => void
   readOnly?: boolean
+  addActionHandler?: (actionsIdx: number, text: string) => void
+  removeActionHandler?: (actionsIdx: number, itemIdx: number) => void
+  toggleCheckHandler?: (actionsIdx: number, text: number) => void
+  editActionHandler?: (actionsIdx: number, index: number, text: string) => void
 }
 const ActionsComponent = observer(
-  ({ actionsIdx, actions, readOnly, onEditStart, onEditEnd }: Props): React.JSX.Element => {
+  ({
+    actionsIdx,
+    actions,
+    readOnly,
+    onEditStart,
+    onEditEnd,
+    addActionHandler,
+    removeActionHandler,
+    toggleCheckHandler,
+    editActionHandler,
+  }: Props): React.JSX.Element => {
     const [editMode, setEditMode] = useState(false)
     const [addButtonDisable, setAddButtonDisable] = useState(false)
-    const { addAction, removeAction, toggleActionCheck, editAction } = useStore()
     const [anyTasksProcessing, setAnyTasksProcessing] = useProcessingState({})
 
     useEffect(() => {
@@ -36,18 +49,18 @@ const ActionsComponent = observer(
       }
     }, [anyTasksProcessing])
 
-    const addActionHandler = (text: string): void => {
-      addAction(actionsIdx, text)
-    }
-    const removeActionHandler = (index: number): void => {
-      removeAction(actionsIdx, index)
-    }
-    const toggleCheckHandler = (index: number): void => {
-      toggleActionCheck(actionsIdx, index)
-    }
-    const editActionHandler = (index: number, text: string): void => {
-      editAction(actionsIdx, index, text)
-    }
+    // const addActionHandler = (text: string): void => {
+    //   addAction(actionsIdx, text)
+    // }
+    // const removeActionHandler = (index: number): void => {
+    //   removeAction(actionsIdx, index)
+    // }
+    // const toggleCheckHandler = (index: number): void => {
+    //   toggleActionCheck(actionsIdx, index)
+    // }
+    // const editActionHandler = (index: number, text: string): void => {
+    //   editAction(actionsIdx, index, text)
+    // }
     const enableEditMode = (): void => {
       setEditMode(true)
     }
@@ -65,11 +78,11 @@ const ActionsComponent = observer(
       setAnyTasksProcessing(index, false)
     }
     return (
-      <div className="bg-amber-300 h-52  w-72 rounded flex flex-col">
+      <div className="bg-amber-300 h-52  w-72 rounded flex flex-col mb-1">
         <h4 className="text-center border-b border-slate-500 tracking-[.1em] font-semibold py-2">
           {actions.name}
         </h4>
-        <div className="bg-amber-200 h-4/6 px-3 py-2">
+        <div className="bg-amber-200 h-4/6 px-1 py-2">
           <ul>
             {actions.tasks.map((action, index) => (
               <TaskComponent
@@ -77,12 +90,18 @@ const ActionsComponent = observer(
                 itemIndex={index}
                 key={index}
                 taskIdentifier={actions.name}
-                onDeleteClick={removeActionHandler}
-                onToggleCheckClick={toggleCheckHandler}
-                onEditConfirm={editActionHandler}
+                onDeleteClick={(index: number) =>
+                  removeActionHandler && removeActionHandler(actionsIdx, index)
+                }
+                onToggleCheckClick={(index: number) =>
+                  toggleCheckHandler && toggleCheckHandler(actionsIdx, index)
+                }
+                onEditConfirm={(index: number, text: string) =>
+                  editActionHandler && editActionHandler(actionsIdx, index, text)
+                }
                 onEditEnd={onEditActionsEnd}
                 onEditStart={onEditActionsStart}
-                readOnly
+                readOnly={readOnly}
               />
             ))}
           </ul>
@@ -90,10 +109,12 @@ const ActionsComponent = observer(
             <TaskComponent
               itemIndex={actions.tasks.length}
               taskIdentifier={actionsIdx}
-              onAddConfirm={addActionHandler}
+              onAddConfirm={(text: string) =>
+                addActionHandler && addActionHandler(actionsIdx, text)
+              }
               onEditEnd={onEditActionsEnd}
+              readOnly={readOnly}
               writeMode
-              readOnly
             />
           ) : null}
         </div>

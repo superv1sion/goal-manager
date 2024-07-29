@@ -5,16 +5,18 @@ const IconCheckbox = ({
   isChecked,
   hovered,
   onClick,
+  readOnly,
 }: {
   isChecked: boolean
+  readOnly: boolean
   hovered: boolean
   onClick: () => void
 }): ReactElement => {
   return (
     <button
       className={`mr-1 ${isChecked ? 'size-5' : 'w-5 h-[.95rem]'} ${
-        hovered || isChecked ? '' : 'hidden'
-      } flex justify-center`}
+        readOnly || hovered || isChecked ? '' : 'hidden'
+      } ${readOnly ? 'cursor-default' : ''} flex justify-center`}
       onClick={(e) => {
         e.preventDefault()
         onClick()

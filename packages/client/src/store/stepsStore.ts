@@ -85,27 +85,27 @@ class PlansStore {
 
   public _draftPlan: DraftPlan | null = null
 
-  public _plan: Plan | null = null
+  // public _plan: Plan | null = null
 
   constructor() {
     makeAutoObservable(this)
   }
 
-  set plan(planObj: Plan) {
-    this._plan = planObj
-    if (this._plan) {
-      saveToLocalStorage<Plan>('plan', this._plan)
-    } else {
-      deleteFromLocalStorage('plan')
-    }
-  }
-
-  get plan(): Plan | null {
-    if (this._plan) {
-      return this._plan
-    }
-    return getFromLocalStorage<Plan>('plan')
-  }
+  // set plan(planObj: Plan) {
+  //   this._plan = planObj
+  //   if (this._plan) {
+  //     saveToLocalStorage<Plan>('plan', this._plan)
+  //   } else {
+  //     deleteFromLocalStorage('plan')
+  //   }
+  // }
+  //
+  // get plan(): Plan | null {
+  //   if (this._plan) {
+  //     return this._plan
+  //   }
+  //   return getFromLocalStorage<Plan>('plan')
+  // }
 
   set draftPlan(planObj: DraftPlan | null) {
     this._draftPlan = planObj
@@ -165,6 +165,15 @@ class PlansStore {
     this.allPlans = [
       ...this.allPlans.filter((persistentPlan) => plan.planId !== persistentPlan.planId),
       plan,
+    ]
+    saveToLocalStorage('allPlans', this.allPlans)
+  }
+
+  updatePlan = (plan: Plan): void => {
+    this.allPlans = [
+      // ...this.allPlans.filter((persistentPlan) => plan.planId !== persistentPlan.planId),
+      // plan,
+      ...this.allPlans.map((p) => (p.planId === plan.planId ? plan : p)),
     ]
     saveToLocalStorage('allPlans', this.allPlans)
   }
@@ -231,7 +240,6 @@ class PlansStore {
       ...this.draftPlan?.steps[stepIdx].items.filter((item, index) => index !== itemIdx),
     ]
     this.draftPlan = { ...this.draftPlan }
-    // this.draftPlan.steps[stepIdx].items.splice(itemIdx, 1)
     this.saveCurrentPlanToLocalStorage()
   }
 
