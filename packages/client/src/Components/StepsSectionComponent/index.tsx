@@ -13,7 +13,9 @@ interface Props {
   removeItemHandler?: (stepNumber: number, index: number) => void
   toggleCheckHandler?: (stepNumber: number, index: number) => void
   editItemHandler?: (stepNumber: number, index: number, text: string) => void
+  calculateSumHandler?: (stepNumber: number, sum: number) => void
 }
+
 const StepsSection = ({
   plan,
   onEditStepsStart,
@@ -23,6 +25,7 @@ const StepsSection = ({
   removeItemHandler,
   toggleCheckHandler,
   editItemHandler,
+  calculateSumHandler,
 }: Props): React.JSX.Element => {
   return (
     <div className="grid grid-rows-3 grid-flow-col size-fit gap-1">
@@ -40,6 +43,7 @@ const StepsSection = ({
                 onEditStart={onEditStepsStart}
                 onEditEnd={onEditStepsEnd}
                 readOnly={readOnly}
+                calculateSumHandler={calculateSumHandler}
               />
             </div>
           )
@@ -56,6 +60,7 @@ const StepsSection = ({
             onEditEnd={onEditStepsEnd}
             step={step}
             readOnly={readOnly}
+            calculateSumHandler={calculateSumHandler}
           />
         )
       })}

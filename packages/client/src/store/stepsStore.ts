@@ -1,5 +1,5 @@
 'use client'
-import { action, configure, makeAutoObservable, runInAction } from 'mobx'
+import { configure, makeAutoObservable, runInAction } from 'mobx'
 import { omit } from 'ramda'
 import React from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -32,6 +32,7 @@ const getInitialSteps = (): Step[] => [
     number: 5,
     title: 'COST',
     items: [],
+    sum: 0,
   },
   {
     number: 4,
@@ -42,11 +43,13 @@ const getInitialSteps = (): Step[] => [
     number: 5,
     title: 'COST',
     items: [],
+    sum: 0,
   },
   {
     number: 5,
     title: 'COST',
     items: [],
+    sum: 0,
   },
 ]
 const getInitialActions = (): Actions[] => [
@@ -170,11 +173,7 @@ class PlansStore {
   }
 
   updatePlan = (plan: Plan): void => {
-    this.allPlans = [
-      // ...this.allPlans.filter((persistentPlan) => plan.planId !== persistentPlan.planId),
-      // plan,
-      ...this.allPlans.map((p) => (p.planId === plan.planId ? plan : p)),
-    ]
+    this.allPlans = [...this.allPlans.map((p) => (p.planId === plan.planId ? plan : p))]
     saveToLocalStorage('allPlans', this.allPlans)
   }
 
@@ -182,6 +181,8 @@ class PlansStore {
     this.allPlans = this.allPlans.filter((persistentPlan) => persistentPlan.planId !== planId)
     saveToLocalStorage('allPlans', this.allPlans)
   }
+
+  calculateSum = (stepIdx: number, sum: number): void => {}
 
   addItem = (stepIdx: number, text: string): void => {
     if (!this.draftPlan) {
@@ -206,7 +207,6 @@ class PlansStore {
       ...this.draftPlan,
       steps,
     }
-    // this.draftPlan.steps[stepIdx].items.push(newItem)
     this.saveCurrentPlanToLocalStorage()
   }
 

@@ -9,7 +9,7 @@ import { Actions } from '@/types/actions'
 
 interface Props {
   actions: Actions
-  actionsIdx: number
+  actionsIndex: number
   onEditStart?: (index: number) => void
   onEditEnd?: (index: number) => void
   readOnly?: boolean
@@ -20,7 +20,7 @@ interface Props {
 }
 const ActionsComponent = observer(
   ({
-    actionsIdx,
+    actionsIndex,
     actions,
     readOnly,
     onEditStart,
@@ -38,13 +38,13 @@ const ActionsComponent = observer(
       if (anyTasksProcessing) {
         setAddButtonDisable(true)
         if (onEditStart) {
-          onEditStart(actionsIdx)
+          onEditStart(actionsIndex)
         }
         return
       }
       setAddButtonDisable(false)
       if (onEditEnd) {
-        onEditEnd(actionsIdx)
+        onEditEnd(actionsIndex)
       }
     }, [anyTasksProcessing])
 
@@ -78,13 +78,13 @@ const ActionsComponent = observer(
                 key={index}
                 taskIdentifier={actions.name}
                 onDeleteClick={(index: number) =>
-                  removeActionHandler && removeActionHandler(actionsIdx, index)
+                  removeActionHandler && removeActionHandler(actionsIndex, index)
                 }
                 onToggleCheckClick={(index: number) =>
-                  toggleCheckHandler && toggleCheckHandler(actionsIdx, index)
+                  toggleCheckHandler && toggleCheckHandler(actionsIndex, index)
                 }
                 onEditConfirm={(index: number, text: string) =>
-                  editActionHandler && editActionHandler(actionsIdx, index, text)
+                  editActionHandler && editActionHandler(actionsIndex, index, text)
                 }
                 onEditEnd={onEditActionsEnd}
                 onEditStart={onEditActionsStart}
@@ -95,9 +95,9 @@ const ActionsComponent = observer(
           {editMode ? (
             <TaskComponent
               itemIndex={actions.tasks.length}
-              taskIdentifier={actionsIdx}
+              taskIdentifier={actionsIndex}
               onAddConfirm={(text: string) =>
-                addActionHandler && addActionHandler(actionsIdx, text)
+                addActionHandler && addActionHandler(actionsIndex, text)
               }
               onEditEnd={onEditActionsEnd}
               readOnly={readOnly}

@@ -23,14 +23,15 @@ const ActionsSection = ({
   toggleCheckHandler,
   editActionHandler,
 }: Props): React.JSX.Element => {
+  console.log(actions)
   return (
     <div className="self-center">
-      {actions.map((a, index) => {
+      {actions.map((action, index) => {
         return (
           <ActionsComponent
-            actions={a}
-            actionsIdx={index}
-            key={a.name}
+            actions={action}
+            actionsIndex={index}
+            key={action.name}
             onEditStart={onEditStart}
             onEditEnd={onEditEnd}
             readOnly={readOnly}

@@ -12,6 +12,7 @@ import StepsSection from '@/Components/StepsSectionComponent'
 import { useProccessingStatusHandler } from '@/hooks/useProcessingStatusHandler'
 import { useStore } from '@/store/stepsStore'
 import { Plan } from '@/types/plan'
+import { Step } from '@/types/step'
 import { Task } from '@/types/task'
 interface Props {
   plan: Plan
@@ -55,8 +56,8 @@ export const EditPlanComponent = observer(({ plan }: Props): React.JSX.Element =
   const updateState = (
     path: Array<string | number>,
     flag: flag,
-    // stepIdx: number,
-    itemIdx?: number,
+    // stepIndex: number,
+    itemIndex?: number,
     text = ''
   ): void => {
     const items = R.path<Task[]>(path, state) ?? []
@@ -69,45 +70,52 @@ export const EditPlanComponent = observer(({ plan }: Props): React.JSX.Element =
         }
         return [...items, newItem]
       },
-      remove: (): Task[] => items.filter((_, index) => index !== itemIdx),
+      remove: (): Task[] => items.filter((_, index) => index !== itemIndex),
       toggle: (): Task[] =>
         items.map((item, index) =>
-          index === itemIdx ? { ...item, isReady: !item.isReady } : item
+          index === itemIndex ? { ...item, isReady: !item.isReady } : item
         ),
       edit: (): Task[] =>
-        items.map((item, index) => (index === itemIdx ? { ...item, text } : item)),
+        items.map((item, index) => (index === itemIndex ? { ...item, text } : item)),
     }
     const updatedItems: Array<Task | undefined> = updater[flag]()
     const newState = R.assocPath(path, updatedItems, state)
     setState(newState)
   }
-  const addStepItem = (stepIdx: number, text: string): void => {
-    updateState(['steps', stepIdx, 'items'], 'add', 0, text)
+  const addStepItem = (stepIndex: number, text: string): void => {
+    updateState(['steps', stepIndex, 'items'], 'add', 0, text)
   }
 
-  const removeStepItem = (stepIdx: number, itemIdx: number): void => {
-    updateState(['steps', stepIdx, 'items'], 'remove', itemIdx)
+  const removeStepItem = (stepIndex: number, itemIndex: number): void => {
+    updateState(['steps', stepIndex, 'items'], 'remove', itemIndex)
   }
 
-  const toggleStepItemCheck = (stepIdx: number, itemIdx: number): void => {
-    updateState(['steps', stepIdx, 'items'], 'toggle', itemIdx)
+  const toggleStepItemCheck = (stepIndex: number, itemIndex: number): void => {
+    updateState(['steps', stepIndex, 'items'], 'toggle', itemIndex)
   }
 
-  const editStepItem = (stepIdx: number, itemIdx: number, text: string): void => {
-    updateState(['steps', stepIdx, 'items'], 'edit', itemIdx, text)
+  const editStepItem = (stepIndex: number, itemIndex: number, text: string): void => {
+    updateState(['steps', stepIndex, 'items'], 'edit', itemIndex, text)
   }
-  const addActionItem = (actionIdx: number, text: string): void => {
-    updateState(['actions', actionIdx, 'tasks'], 'add', 0, text)
+  const calculateSum = (stepIndex: number, sum: number): void => {
+    const step = { ...R.path<Step>(['steps', stepIndex], state) }
+    const updatedStep = { ...step, sum }
+    const newState = R.assocPath(['steps', stepIndex], updatedStep, state)
+    setState(newState)
   }
-  const removeActionItem = (actionIdx: number, itemIdx: number): void => {
-    updateState(['actions', actionIdx, 'tasks'], 'remove', itemIdx)
+  const addActionItem = (actionIndex: number, text: string): void => {
+    updateState(['actions', actionIndex, 'tasks'], 'add', 0, text)
   }
-  const toggleActionItemCheck = (actionIdx: number, itemIdx: number): void => {
-    updateState(['actions', actionIdx, 'tasks'], 'toggle', itemIdx)
+  const removeActionItem = (actionIndex: number, itemIndex: number): void => {
+    updateState(['actions', actionIndex, 'tasks'], 'remove', itemIndex)
   }
-  const editActionItem = (actionIdx: number, itemIdx: number, text: string): void => {
-    updateState(['actions', actionIdx, 'tasks'], 'edit', itemIdx, text)
+  const toggleActionItemCheck = (actionIndex: number, itemIndex: number): void => {
+    updateState(['actions', actionIndex, 'tasks'], 'toggle', itemIndex)
   }
+  const editActionItem = (actionIndex: number, itemIndex: number, text: string): void => {
+    updateState(['actions', actionIndex, 'tasks'], 'edit', itemIndex, text)
+  }
+
   return (
     <div className="px-5 py-2 w-screen">
       <form action={submitForm} className="flex flex-col">
@@ -127,6 +135,7 @@ export const EditPlanComponent = observer(({ plan }: Props): React.JSX.Element =
             editItemHandler={editStepItem}
             onEditStepsStart={onEditStepsStart}
             onEditStepsEnd={onEditStepsEnd}
+            calculateSumHandler={calculateSum}
           />
           <ActionsSection
             actions={state.actions}

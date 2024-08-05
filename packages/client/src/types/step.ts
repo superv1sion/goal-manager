@@ -4,4 +4,5 @@ export interface Step {
   number: number
   title: string
   items: Task[]
+  sum?: number
 }
