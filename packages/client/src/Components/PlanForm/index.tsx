@@ -15,7 +15,6 @@ import { addPlanAction } from './action'
 const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElement => {
   const {
     addPlan,
-    deleteDraftPlan,
     consumeDraftPlan,
     addItem,
     removeItem,
