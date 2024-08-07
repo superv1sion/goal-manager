@@ -46,7 +46,7 @@ const ActionsComponent = observer(
       if (onEditEnd) {
         onEditEnd(actionsIndex)
       }
-    }, [anyTasksProcessing])
+    }, [actionsIndex, anyTasksProcessing, onEditEnd, onEditStart])
 
     const enableEditMode = (): void => {
       setEditMode(true)

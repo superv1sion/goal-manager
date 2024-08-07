@@ -69,7 +69,7 @@ const getInitialActions = (): Actions[] => [
 const saveToLocalStorage = <T>(key: string, value: T): void => {
   localStorage.setItem(key, JSON.stringify(value))
 }
-const deleteFromLocalStorage = <T>(key: string): void => {
+const deleteFromLocalStorage = (key: string): void => {
   localStorage.removeItem(key)
 }
 const getFromLocalStorage = <Type>(key: string): Type | null => {
@@ -182,8 +182,6 @@ class PlansStore {
     saveToLocalStorage('allPlans', this.allPlans)
   }
 
-  calculateSum = (stepIdx: number, sum: number): void => {}
-
   addItem = (stepIdx: number, text: string): void => {
     if (!this.draftPlan) {
       return
@@ -237,7 +235,7 @@ class PlansStore {
       return
     }
     this.draftPlan.steps[stepIdx].items = [
-      ...this.draftPlan?.steps[stepIdx].items.filter((item, index) => index !== itemIdx),
+      ...this.draftPlan?.steps[stepIdx].items.filter((_, index) => index !== itemIdx),
     ]
     this.draftPlan = { ...this.draftPlan }
     this.saveCurrentPlanToLocalStorage()
@@ -248,7 +246,7 @@ class PlansStore {
       return
     }
     const filteredTasks = this.draftPlan.actions[actionsIdx].tasks.filter(
-      (item, index) => index !== taskIdx
+      (_, index) => index !== taskIdx
     )
     const actions = [
       ...this.draftPlan.actions.map((a, index) => {

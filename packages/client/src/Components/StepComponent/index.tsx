@@ -68,7 +68,6 @@ const StepComponent = observer(
       const number = parsed.length === 1 ? parsed[0] : parsed.reduce((acc, num) => acc + num, 0)
       return acc + number
     }, 0)
-    const superTotal = useMemo(() => {}, [sum, total])
 
     useEffect(() => {
       if (anyTasksProcessing) {
@@ -82,7 +81,7 @@ const StepComponent = observer(
       if (onEditEnd) {
         onEditEnd(stepNumber)
       }
-    }, [anyTasksProcessing])
+    }, [anyTasksProcessing, onEditEnd, onEditStart, stepNumber])
     const ref = useRef<HTMLDivElement>(null)
 
     const disableEditMode = (): void => {

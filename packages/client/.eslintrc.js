@@ -35,7 +35,8 @@ module.exports = {
         'plugin:testing-library/react',
         'plugin:jest-dom/recommended',
         'plugin:yaml/recommended',
-        'prettier'
+        'prettier',
+        'plugin:@next/next/recommended'
     ],
     rules: {
         'simple-import-sort/imports': 'warn',

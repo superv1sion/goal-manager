@@ -6,7 +6,7 @@ import { useFormState } from 'react-dom'
 
 import ActionsSection from '@/Components/ActionsSectionComponent'
 import StepsSection from '@/Components/StepsSectionComponent'
-import { useProccessingStatusHandler } from '@/hooks/useProcessingStatusHandler'
+import { useProcessingStatusHandler } from '@/hooks/useProcessingStatusHandler'
 import { useStore } from '@/store/stepsStore'
 import { DraftPlan } from '@/types/draftPlan'
 
@@ -28,7 +28,7 @@ const PlanForm = observer(({ draftPlan }: { draftPlan: DraftPlan }): ReactElemen
   const router = useRouter()
   const [formState, submitForm] = useFormState(addPlanAction(addPlan, draftPlan), null)
   const { buttonDisabled, onEditStepsStart, onEditStepsEnd, onEditActionsStart, onEditActionsEnd } =
-    useProccessingStatusHandler()
+    useProcessingStatusHandler()
 
   if (formState?.success) {
     consumeDraftPlan()
