@@ -21,15 +21,19 @@ export const useProcessingStatusHandler = (): ProcessingStatus => {
   const onEditStepsStart = (index: number): void => {
     setAnyStepsProcessing(index, true)
   }
+
   const onEditStepsEnd = (index: number): void => {
     setAnyStepsProcessing(index, false)
   }
+
   const onEditActionsStart = (index: number): void => {
     setAnyActionsProcessing(index, true)
   }
+
   const onEditActionsEnd = (index: number): void => {
     setAnyActionsProcessing(index, false)
   }
+
   return {
     buttonDisabled,
     onEditStepsStart,

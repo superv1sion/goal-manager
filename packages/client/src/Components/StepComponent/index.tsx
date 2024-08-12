@@ -1,11 +1,12 @@
 'use client'
 import { CheckIcon, PlusCircleIcon } from '@heroicons/react/24/outline'
 import { observer } from 'mobx-react-lite'
-import React, { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
+import React, { ReactElement, useMemo, useRef, useState } from 'react'
 import TaskComponent from 'src/Components/TaskComponent'
 
 import { useProcessingState } from '@/hooks/useProcessingState'
 import { Step } from '@/types/step'
+import { parseIntegers } from '@/utils/stepItemsNumbersParser'
 
 interface StepProps {
   step: Step
@@ -35,7 +36,6 @@ const StepComponent = observer(
   }: StepProps): ReactElement => {
     const { items, number, title, sum } = step
     const [editMode, setEditMode] = useState(false)
-    const [addButtonDisable, setAddButtonDisable] = useState(false)
     const [anyTasksProcessing, setAnyTasksProcessing] = useProcessingState({})
     const [usersSum, setUsersSum] = useState(sum)
     const color = useMemo(() => {
@@ -46,42 +46,12 @@ const StepComponent = observer(
       return [3, 5, 6].includes(stepNumber)
     }, [stepNumber])
 
-    const parseIntegers = (str: string): number[] => {
-      let subStr = ''
-      const arrayOfNumbers = []
-      for (let i = 0; i < str.length; i++) {
-        if (!isNaN(+str[i])) {
-          subStr += str[i]
-        } else if (subStr.length > 0) {
-          arrayOfNumbers.push(parseInt(subStr))
-          subStr = ''
-        }
-      }
-      if (subStr.length > 0) {
-        arrayOfNumbers.push(parseInt(subStr, 10))
-      }
-      return arrayOfNumbers
-    }
-
     const total = items.reduce((acc, item) => {
       const parsed = parseIntegers(item.text)
       const number = parsed.length === 1 ? parsed[0] : parsed.reduce((acc, num) => acc + num, 0)
       return acc + number
     }, 0)
 
-    useEffect(() => {
-      if (anyTasksProcessing) {
-        setAddButtonDisable(true)
-        if (onEditStart) {
-          onEditStart(stepNumber)
-        }
-        return
-      }
-      setAddButtonDisable(false)
-      if (onEditEnd) {
-        onEditEnd(stepNumber)
-      }
-    }, [anyTasksProcessing, onEditEnd, onEditStart, stepNumber])
     const ref = useRef<HTMLDivElement>(null)
 
     const disableEditMode = (): void => {
@@ -93,30 +63,14 @@ const StepComponent = observer(
     }
     const onEditStepStart = (index: number): void => {
       setAnyTasksProcessing(index, true)
+      onEditStart && onEditStart(stepNumber)
     }
 
     const onEditStepEnd = (index: number): void => {
       disableEditMode()
       setAnyTasksProcessing(index, false)
+      onEditEnd && onEditEnd(stepNumber)
     }
-    const itemComponentsList = items.map((item, index) => (
-      <TaskComponent
-        item={item}
-        itemIndex={index}
-        onDeleteClick={(index: number) => removeItemHandler && removeItemHandler(stepNumber, index)}
-        key={index}
-        taskIdentifier={stepNumber}
-        readOnly={readOnly}
-        onToggleCheckClick={(index: number) =>
-          toggleCheckHandler && toggleCheckHandler(stepNumber, index)
-        }
-        onEditConfirm={(index: number, text: string) =>
-          editItemHandler && editItemHandler(stepNumber, index, text)
-        }
-        onEditEnd={onEditStepEnd}
-        onEditStart={onEditStepStart}
-      />
-    ))
 
     return (
       <div className="bg-amber-300 h-64  w-72 rounded flex flex-col" ref={ref}>
@@ -127,12 +81,34 @@ const StepComponent = observer(
           </span>
           : {title}
         </h4>
+
         <div className={`${color} h-5/6 px-1 py-2 flex flex-col justify-between overflow-y-scroll`}>
           <div>
-            <ul>{itemComponentsList}</ul>
+            <ul>
+              {items.map((item, index) => (
+                <TaskComponent
+                  item={item}
+                  itemIndex={index}
+                  onDeleteClick={(index: number) =>
+                    removeItemHandler && removeItemHandler(stepNumber, index)
+                  }
+                  key={index}
+                  taskIdentifier={stepNumber}
+                  readOnly={readOnly}
+                  onToggleCheckClick={(index: number) =>
+                    toggleCheckHandler && toggleCheckHandler(stepNumber, index)
+                  }
+                  onEditConfirm={(index: number, text: string) =>
+                    editItemHandler && editItemHandler(stepNumber, index, text)
+                  }
+                  onEditEnd={onEditStepEnd}
+                  onEditStart={onEditStepStart}
+                />
+              ))}
+            </ul>
             {editMode ? (
               <TaskComponent
-                itemIndex={itemComponentsList.length}
+                itemIndex={items.length}
                 taskIdentifier={stepNumber}
                 onAddConfirm={(text) => addItemHandler && addItemHandler(stepNumber, text)}
                 onEditEnd={onEditStepEnd}
@@ -149,6 +125,9 @@ const StepComponent = observer(
                 onChange={(e) => {
                   !isNaN(Number(e.target.value)) && setUsersSum(Number(e.target.value))
                 }}
+                // onBlur={() => {
+                //   calculateSumHandler && calculateSumHandler(stepNumber, Number(usersSum))
+                // }}
                 className="outline-0 bg-amber-200 border-b w-1/3  border-black py-1 px-2 mr-2"
               />
               <button
@@ -164,16 +143,18 @@ const StepComponent = observer(
                 onClick={(event) => {
                   event.preventDefault()
                   setUsersSum(total)
+                  // calculateSumHandler && calculateSumHandler(stepNumber, Number(usersSum))
                 }}
               >
                 Calculate
               </button>
             </span>
           )}
+          {calculable && readOnly && <span className="px-2">Total: {sum}</span>}
         </div>
         <button
           className="size-fit mx-3 my-1 rounded-full text-amber-950 disabled:text-amber-400 disabled:cursor-not-allowed"
-          disabled={addButtonDisable}
+          disabled={anyTasksProcessing}
           onClick={() => {
             enableEditMode()
             onEditStepStart(items.length)

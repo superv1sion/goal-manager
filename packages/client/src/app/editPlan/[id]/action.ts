@@ -20,6 +20,7 @@ export const updatePlanAction =
     if (!isEmpty(errors)) {
       return { success: false, message: 'initiation failed', errors }
     }
+
     updatePlan({ ...plan, name, duration })
     return { success: true, message: 'plan initiated successfully' }
   }
