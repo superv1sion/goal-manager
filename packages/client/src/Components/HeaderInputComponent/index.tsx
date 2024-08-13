@@ -14,7 +14,7 @@ const HeaderInput = ({
   defaultValue,
   errors,
 }: Props): React.JSX.Element => {
-  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>): void => {
     event.target.select()
   }
   return (

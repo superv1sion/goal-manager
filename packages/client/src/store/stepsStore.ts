@@ -57,19 +57,11 @@ const getInitialActions = (): Actions[] => [
   { name: 'tomorrow', tasks: [] },
   { name: 'dayAfter', tasks: [] },
 ]
-// const getInitialPlan = (): Plan => ({
-//   name: '',
-//   duration: null,
-//   creationDate: null,
-//   planId: '',
-//   steps: getInitialSteps(),
-//   actions: [],
-// })
 
 const saveToLocalStorage = <T>(key: string, value: T): void => {
   localStorage.setItem(key, JSON.stringify(value))
 }
-const deleteFromLocalStorage = <T>(key: string): void => {
+const deleteFromLocalStorage = (key: string): void => {
   localStorage.removeItem(key)
 }
 const getFromLocalStorage = <Type>(key: string): Type | null => {
@@ -88,27 +80,9 @@ class PlansStore {
 
   public _draftPlan: DraftPlan | null = null
 
-  // public _plan: Plan | null = null
-
   constructor() {
     makeAutoObservable(this)
   }
-
-  // set plan(planObj: Plan) {
-  //   this._plan = planObj
-  //   if (this._plan) {
-  //     saveToLocalStorage<Plan>('plan', this._plan)
-  //   } else {
-  //     deleteFromLocalStorage('plan')
-  //   }
-  // }
-  //
-  // get plan(): Plan | null {
-  //   if (this._plan) {
-  //     return this._plan
-  //   }
-  //   return getFromLocalStorage<Plan>('plan')
-  // }
 
   set draftPlan(planObj: DraftPlan | null) {
     this._draftPlan = planObj
@@ -182,8 +156,6 @@ class PlansStore {
     saveToLocalStorage('allPlans', this.allPlans)
   }
 
-  calculateSum = (stepIdx: number, sum: number): void => {}
-
   addItem = (stepIdx: number, text: string): void => {
     if (!this.draftPlan) {
       return
@@ -237,7 +209,7 @@ class PlansStore {
       return
     }
     this.draftPlan.steps[stepIdx].items = [
-      ...this.draftPlan?.steps[stepIdx].items.filter((item, index) => index !== itemIdx),
+      ...this.draftPlan?.steps[stepIdx].items.filter((_, index) => index !== itemIdx),
     ]
     this.draftPlan = { ...this.draftPlan }
     this.saveCurrentPlanToLocalStorage()
@@ -248,7 +220,7 @@ class PlansStore {
       return
     }
     const filteredTasks = this.draftPlan.actions[actionsIdx].tasks.filter(
-      (item, index) => index !== taskIdx
+      (_, index) => index !== taskIdx
     )
     const actions = [
       ...this.draftPlan.actions.map((a, index) => {

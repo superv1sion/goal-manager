@@ -20,7 +20,7 @@ const ItemInput = ({
 }: // onEdit, onSave, onDelete, onClickOutside (possibly)
 Props): ReactElement => {
   const [value, setValue] = useState(defaultValue ?? '')
-  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>): void => {
     event.target.select()
   }
   return (
@@ -30,7 +30,6 @@ Props): ReactElement => {
       <input
         type="text"
         onChange={(e) => setValue(e.target.value)}
-        // defaultValue={defaultValue ?? ''}
         value={value}
         className={`outline-0 bg-amber-200 border-b w-8/12 border-black py-1 px ${styles.selection}`}
         onFocus={handleFocus}

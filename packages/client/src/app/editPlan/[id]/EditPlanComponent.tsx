@@ -9,7 +9,7 @@ import { updatePlanAction } from '@/app/editPlan/[id]/action'
 import ActionsSection from '@/Components/ActionsSectionComponent'
 import { EditPlanHeader } from '@/Components/EditPlanHeader'
 import StepsSection from '@/Components/StepsSectionComponent'
-import { useProccessingStatusHandler } from '@/hooks/useProcessingStatusHandler'
+import { useProcessingStatusHandler } from '@/hooks/useProcessingStatusHandler'
 import { useStore } from '@/store/stepsStore'
 import { Plan } from '@/types/plan'
 import { Step } from '@/types/step'
@@ -24,32 +24,12 @@ export const EditPlanComponent = observer(({ plan }: Props): React.JSX.Element =
   const [state, setState] = useState<Plan>(plan)
   const [formState, submitForm] = useFormState(updatePlanAction(updatePlan, state), null)
   const { buttonDisabled, onEditStepsStart, onEditStepsEnd, onEditActionsStart, onEditActionsEnd } =
-    useProccessingStatusHandler()
+    useProcessingStatusHandler()
 
   if (formState?.success) {
     router.push('/plans')
     return <></>
   }
-  // const [buttonDisabled, setButtonDisabled] = useState(false)
-  // const [anyStepsProcessing, setAnyStepsProcessing] = useProcessingState({})
-  // const [anyActionsProcessing, setAnyActionsProcessing] = useProcessingState({})
-  //
-  // useEffect(() => {
-  //   setButtonDisabled(anyStepsProcessing || anyActionsProcessing)
-  // }, [anyStepsProcessing, anyActionsProcessing])
-  //
-  // const onEditStepsStart = (index: number): void => {
-  //   setAnyStepsProcessing(index, true)
-  // }
-  // const onEditStepsEnd = (index: number): void => {
-  //   setAnyStepsProcessing(index, false)
-  // }
-  // const onEditActionsStart = (index: number): void => {
-  //   setAnyActionsProcessing(index, true)
-  // }
-  // const onEditActionsEnd = (index: number): void => {
-  //   setAnyActionsProcessing(index, false)
-  // }
 
   type flag = 'add' | 'remove' | 'toggle' | 'edit'
 

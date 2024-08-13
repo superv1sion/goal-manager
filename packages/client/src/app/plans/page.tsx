@@ -1,9 +1,9 @@
 'use client'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-import PlansList from '@/Components/PlansList'
-
+const PlansList = dynamic(async () => await import('@/Components/PlansList'), { ssr: false })
 const Plans = (): React.JSX.Element => {
   const router = useRouter()
   return (

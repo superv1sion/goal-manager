@@ -9,7 +9,7 @@ interface ProcessingStatus {
   onEditActionsEnd: (index: number) => void
 }
 
-export const useProccessingStatusHandler = (): ProcessingStatus => {
+export const useProcessingStatusHandler = (): ProcessingStatus => {
   const [buttonDisabled, setButtonDisabled] = useState(false)
   const [anyStepsProcessing, setAnyStepsProcessing] = useProcessingState({})
   const [anyActionsProcessing, setAnyActionsProcessing] = useProcessingState({})
@@ -21,15 +21,19 @@ export const useProccessingStatusHandler = (): ProcessingStatus => {
   const onEditStepsStart = (index: number): void => {
     setAnyStepsProcessing(index, true)
   }
+
   const onEditStepsEnd = (index: number): void => {
     setAnyStepsProcessing(index, false)
   }
+
   const onEditActionsStart = (index: number): void => {
     setAnyActionsProcessing(index, true)
   }
+
   const onEditActionsEnd = (index: number): void => {
     setAnyActionsProcessing(index, false)
   }
+
   return {
     buttonDisabled,
     onEditStepsStart,

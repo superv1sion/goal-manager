@@ -23,7 +23,6 @@ const ActionsSection = ({
   toggleCheckHandler,
   editActionHandler,
 }: Props): React.JSX.Element => {
-  console.log(actions)
   return (
     <div className="self-center">
       {actions.map((action, index) => {

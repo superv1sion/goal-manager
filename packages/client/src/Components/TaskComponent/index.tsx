@@ -1,6 +1,6 @@
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { observer } from 'mobx-react-lite'
-import React, { ReactElement, useEffect, useRef, useState } from 'react'
+import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import ItemInput from '@/Components/ItemInput'
 import { Task } from '@/types/task'
@@ -53,18 +53,21 @@ const TaskComponent = observer(
       setEditMode(true)
       if (onEditStart) onEditStart(itemIndex)
     }
-    const onEditTaskEnd = (): void => {
+    const onEditTaskEnd = useCallback((): void => {
       setEditMode(false)
       if (onEditEnd) onEditEnd(itemIndex)
-    }
+    }, [itemIndex, onEditEnd])
     const ref = useRef<HTMLLIElement>(null)
 
-    const clickOutsideComponent = (event: MouseEvent): void => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        setEditMode(false)
-        onEditTaskEnd()
-      }
-    }
+    const clickOutsideComponent = useCallback(
+      (event: MouseEvent): void => {
+        if (ref.current && !ref.current.contains(event.target as Node)) {
+          setEditMode(false)
+          onEditTaskEnd()
+        }
+      },
+      [onEditTaskEnd]
+    )
     useEffect(() => {
       if (editMode) {
         document.addEventListener('mousedown', clickOutsideComponent)
@@ -74,7 +77,7 @@ const TaskComponent = observer(
       return () => {
         document.removeEventListener('mousedown', clickOutsideComponent)
       }
-    }, [editMode, onEditEnd, itemIndex])
+    }, [editMode, onEditEnd, itemIndex, clickOutsideComponent])
 
     return (
       <li

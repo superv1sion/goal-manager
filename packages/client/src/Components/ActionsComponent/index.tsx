@@ -1,7 +1,7 @@
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import { observer } from 'mobx-react-lite'
 import * as React from 'react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import TaskComponent from '@/Components/TaskComponent'
 import { useProcessingState } from '@/hooks/useProcessingState'
@@ -31,22 +31,7 @@ const ActionsComponent = observer(
     editActionHandler,
   }: Props): React.JSX.Element => {
     const [editMode, setEditMode] = useState(false)
-    const [addButtonDisable, setAddButtonDisable] = useState(false)
     const [anyTasksProcessing, setAnyTasksProcessing] = useProcessingState({})
-
-    useEffect(() => {
-      if (anyTasksProcessing) {
-        setAddButtonDisable(true)
-        if (onEditStart) {
-          onEditStart(actionsIndex)
-        }
-        return
-      }
-      setAddButtonDisable(false)
-      if (onEditEnd) {
-        onEditEnd(actionsIndex)
-      }
-    }, [anyTasksProcessing])
 
     const enableEditMode = (): void => {
       setEditMode(true)
@@ -58,11 +43,13 @@ const ActionsComponent = observer(
 
     const onEditActionsStart = (index: number): void => {
       setAnyTasksProcessing(index, true)
+      onEditStart && onEditStart(actionsIndex)
     }
 
     const onEditActionsEnd = (index: number): void => {
       disableEditMode()
       setAnyTasksProcessing(index, false)
+      onEditEnd && onEditEnd(actionsIndex)
     }
     return (
       <div className="bg-amber-300 h-52  w-72 rounded flex flex-col mb-1">
@@ -107,7 +94,7 @@ const ActionsComponent = observer(
         </div>
         <button
           className="size-fit mx-3 my-1 rounded-full text-amber-950 disabled:text-amber-400 disabled:cursor-not-allowed"
-          disabled={addButtonDisable}
+          disabled={anyTasksProcessing}
           onClick={(e) => {
             e.preventDefault()
             enableEditMode()
