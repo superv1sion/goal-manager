@@ -1,7 +1,7 @@
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
 import { observer } from 'mobx-react-lite'
 import * as React from 'react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import TaskComponent from '@/Components/TaskComponent'
 import { useProcessingState } from '@/hooks/useProcessingState'
@@ -51,7 +51,6 @@ const ActionsComponent = observer(
       setAnyTasksProcessing(index, false)
       onEditEnd && onEditEnd(actionsIndex)
     }
-    console.log('actions component')
     return (
       <div className="bg-amber-300 h-52  w-72 rounded flex flex-col mb-1">
         <h4 className="text-center border-b border-slate-500 tracking-[.1em] font-semibold py-2">
