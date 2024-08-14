@@ -1,9 +1,7 @@
-import dynamic from 'next/dynamic'
 import React, { ReactElement } from 'react'
 
-const InitiatePlanHeader = dynamic(async () => await import('@/Components/InitiatePlanHeader'), {
-  ssr: false,
-})
+import InitiatePlanHeader from '@/Components/InitiatePlanHeader'
+
 export default function InitiatePlan(): ReactElement {
   return <InitiatePlanHeader />
 }
